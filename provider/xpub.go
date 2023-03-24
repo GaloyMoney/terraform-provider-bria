@@ -1,9 +1,9 @@
-package account
+package provider
 
 import (
 	"fmt"
 
-	"github.com/GaloyMoney/terraform-provider-bria/bria/account"
+	"github.com/GaloyMoney/terraform-provider-bria/bria"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -40,7 +40,7 @@ func resourceBriaAccountXpub() *schema.Resource {
 }
 
 func resourceBriaAccountXpubCreate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*account.AccountClient)
+	client := meta.(*bria.AccountClient)
 
 	name := d.Get("name").(string)
 	xpub := d.Get("xpub").(string)

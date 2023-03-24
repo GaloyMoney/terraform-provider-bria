@@ -1,9 +1,9 @@
-package account
+package provider
 
 import (
 	"fmt"
 
-	"github.com/GaloyMoney/terraform-provider-bria/bria/account"
+	"github.com/GaloyMoney/terraform-provider-bria/bria"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -36,7 +36,7 @@ func resourceBriaAccountWallet() *schema.Resource {
 }
 
 func resourceBriaAccountWalletCreate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*account.AccountClient)
+	client := meta.(*bria.AccountClient)
 
 	name := d.Get("name").(string)
 	xpubRefsRaw := d.Get("xpubs").([]interface{})

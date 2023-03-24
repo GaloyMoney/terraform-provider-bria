@@ -4,8 +4,8 @@ terraform {
       source  = "galoymoney/briaadmin"
       version = "0.1.0"
     }
-    briaaccount = {
-      source  = "galoymoney/briaaccount"
+    bria = {
+      source  = "galoymoney/bria"
       version = "0.1.0"
     }
   }
@@ -26,23 +26,23 @@ resource "briaadmin_account" "example" {
   name = "tf-example-${random_string.postfix.result}"
 }
 
-provider "briaaccount" {
+provider "bria" {
   api_key = briaadmin_account.example.api_key
 }
 
-resource "briaaccount_xpub" "lnd" {
+resource "bria_xpub" "lnd" {
   name       = "lnd"
   xpub       = "tpubDDEGUyCLufbxAfQruPHkhUcu55UdhXy7otfcEQG4wqYNnMfq9DbHPxWCqpEQQAJUDi8Bq45DjcukdDAXasKJ2G27iLsvpdoEL5nTRy5TJ2B"
   derivation = "m/64h/1h/0"
 }
 
-resource "briaaccount_wallet" "example" {
+resource "bria_wallet" "example" {
   name  = "example"
-  xpubs = [briaaccount_xpub.lnd.id]
+  xpubs = [bria_xpub.lnd.id]
 }
 
-resource "briaaccount_signer_config" "lnd" {
-  xpub = briaaccount_xpub.lnd.id
+resource "bria_signer_config" "lnd" {
+  xpub = bria_xpub.lnd.id
   lnd {
     endpoint = "localhost:10009"
     macaroon_base64 = "AgEDbG5kAvgBAwoQB1FdhGa9xoewc1LEXmnURRIBMBoWCgdhZGRyZXNzEgRyZWFkEgV3cml0ZRoTCgRpbmZvEgRyZWFkEgV3cml0ZRoXCghpbnZvaWNlcxIEcmVhZBIFd3JpdGUaIQoIbWFjYXJvb24SCGdlbmVyYXRlEgRyZWFkEgV3cml0ZRoWCgdtZXNzYWdlEgRyZWFkEgV3cml0ZRoXCghvZmZjaGFpbhIEcmVhZBIFd3JpdGUaFgoHb25jaGFpbhIEcmVhZBIFd3JpdGUaFAoFcGVlcnMSBHJlYWQSBXdyaXRlGhgKBnNpZ25lchIIZ2VuZXJhdGUSBHJlYWQAAAYgqHDdwGCqx0aQL1/Z3uUfzCpeBhfapGf9s/AZPOVwf6s="

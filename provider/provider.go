@@ -1,7 +1,7 @@
-package account
+package provider
 
 import (
-	"github.com/GaloyMoney/terraform-provider-bria/bria/account"
+	"github.com/GaloyMoney/terraform-provider-bria/bria"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -23,9 +23,9 @@ func Provider() *schema.Provider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"briaaccount_xpub":          resourceBriaAccountXpub(),
-			"briaaccount_wallet":        resourceBriaAccountWallet(),
-			"briaaccount_signer_config": resourceBriaAccountSignerConfig(),
+			"bria_xpub":          resourceBriaAccountXpub(),
+			"bria_wallet":        resourceBriaAccountWallet(),
+			"bria_signer_config": resourceBriaAccountSignerConfig(),
 		},
 
 		ConfigureFunc: providerConfigure,
@@ -36,5 +36,5 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	endpoint := d.Get("endpoint").(string)
 	apiKey := d.Get("api_key").(string)
 
-	return account.NewAccountClient(endpoint, apiKey)
+	return bria.NewAccountClient(endpoint, apiKey)
 }
