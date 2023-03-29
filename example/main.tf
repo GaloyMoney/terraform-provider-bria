@@ -2,17 +2,12 @@ terraform {
   required_providers {
     briaadmin = {
       source  = "galoymoney/briaadmin"
-      version = "0.1.0"
+      version = "0.0.4"
     }
     bria = {
       source  = "galoymoney/bria"
-      version = "0.1.0"
     }
   }
-}
-
-provider "briaadmin" {
-  api_key = "bria_admin_SodrZAMNgGJWVoRRpPh1Uw3388Ku8VmbWYtPAeKB3wnKdy1aGjQjkrSLPAg78lMJ"
 }
 
 resource "random_string" "postfix" {

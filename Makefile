@@ -7,7 +7,7 @@ HOSTNAME=galoymoney
 PROTO_DIR := proto/vendor
 PROTO_OUTPUT_DIR := bria/proto
 
-version = 0.1.0
+version = 0.0.3
 os_arch = $(shell go env GOOS)_$(shell go env GOARCH)
 provider_path = registry.terraform.io/galoymoney/bria/$(version)/$(os_arch)/
 
@@ -34,6 +34,8 @@ install: gen-proto build
 	mv ${BINARY} ~/.terraform.d/plugins/${provider_path}
 	rm -rf example/.terraform example/.terraform.lock.hcl
 
+clean:
+	rm -rf ~/.terraform.d/plugins/${provider_path}
 
 testacc:
 	TF_ACC=1 go test -v ./...
