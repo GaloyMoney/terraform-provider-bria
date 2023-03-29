@@ -6,6 +6,7 @@ terraform {
     }
     bria = {
       source  = "galoymoney/bria"
+      version = "0.0.3"
     }
   }
 }
@@ -60,3 +61,27 @@ FvV1D2W0uFGiZLTHgfh4VaHMyA==
 EOT
   }
 }
+
+resource "bria_batch_group" "immediate" {
+  name = "immidiate-${random_string.postfix.result}"
+  description = "An example Bria batch group"
+
+  config {
+    tx_priority = "NEXT_BLOCK"
+    consolidate_deprecated_keychains = true
+    trigger = "immediate"
+  }
+}
+
+resource "bria_batch_group" "interval" {
+  name = "interval-${random_string.postfix.result}"
+  description = "An example Bria batch group"
+
+  config {
+    tx_priority = "ECONOMY"
+    consolidate_deprecated_keychains = true
+    trigger = "interval"
+    interval_secs = 3600
+  }
+}
+

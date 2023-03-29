@@ -95,9 +95,15 @@ func (c *AccountClient) CreateWallet(name string, xpubRefs []string) (*briav1.Cr
 	return res, nil
 }
 
-func (c *AccountClient) CreateBatchGroup(name string) (*briav1.CreateBatchGroupResponse, error) {
+func (c *AccountClient) CreateBatchGroup(name string, description string, config *briav1.BatchGroupConfig) (*briav1.CreateBatchGroupResponse, error) {
+	var descriptionPtr *string
+	if description != "" {
+		descriptionPtr = &description
+	}
 	req := &briav1.CreateBatchGroupRequest{
-		Name: name,
+		Name:        name,
+		Description: descriptionPtr,
+		Config:      config,
 	}
 	ctx := context.Background()
 	res, err := c.service.CreateBatchGroup(ctx, req)
