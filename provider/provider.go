@@ -23,6 +23,7 @@ func Provider() *schema.Provider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
+			"bria_profile":       resourceBriaProfile(),
 			"bria_xpub":          resourceBriaXpub(),
 			"bria_wallet":        resourceBriaWallet(),
 			"bria_signer_config": resourceBriaSignerConfig(),

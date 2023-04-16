@@ -42,6 +42,41 @@ func (c *AccountClient) Close() {
 	c.conn.Close()
 }
 
+func (c *AccountClient) CreateProfile(name string) (*briav1.CreateProfileResponse, error) {
+	req := &briav1.CreateProfileRequest{
+		Name: name,
+	}
+	ctx := context.Background()
+	res, err := c.service.CreateProfile(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (c *AccountClient) ReadProfile(profileID string) (*briav1.Profile, error) {
+	ctx := context.Background()
+
+	listProfilesRequest := &briav1.ListProfilesRequest{}
+	listProfilesResponse, err := c.service.ListProfiles(ctx, listProfilesRequest)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching profiles: %w", err)
+	}
+
+	// Debug output to show the listProfilesResponse
+	fmt.Printf("List Profiles Response: %+v\n", listProfilesResponse)
+
+	var foundProfile *briav1.Profile
+	for _, profile := range listProfilesResponse.Profiles {
+		if profile.Id == profileID {
+			foundProfile = profile
+			break
+		}
+	}
+
+	return foundProfile, nil
+}
+
 func (c *AccountClient) ImportXpub(name, xpub, derivation string) (*briav1.ImportXpubResponse, error) {
 	req := &briav1.ImportXpubRequest{
 		Name:       name,

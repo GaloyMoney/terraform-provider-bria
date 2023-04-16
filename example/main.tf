@@ -2,11 +2,11 @@ terraform {
   required_providers {
     briaadmin = {
       source  = "galoymoney/briaadmin"
-      version = "0.0.4"
+      version = "0.0.6"
     }
     bria = {
       source  = "galoymoney/bria"
-      version = "0.0.3"
+      version = "0.0.4"
     }
   }
 }
@@ -24,6 +24,10 @@ resource "briaadmin_account" "example" {
 
 provider "bria" {
   api_key = briaadmin_account.example.api_key
+}
+
+resource "bria_profile" "example" {
+  name = "profile-${random_string.postfix.result}"
 }
 
 resource "bria_xpub" "lnd" {
