@@ -77,6 +77,18 @@ func (c *AccountClient) ReadProfile(profileID string) (*briav1.Profile, error) {
 	return foundProfile, nil
 }
 
+func (c *AccountClient) CreateApiKey(name string) (*briav1.CreateProfileApiKeyResponse, error) {
+	req := &briav1.CreateProfileApiKeyRequest{
+		ProfileName: name,
+	}
+	ctx := context.Background()
+	res, err := c.service.CreateProfileApiKey(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
 func (c *AccountClient) ImportXpub(name, xpub, derivation string) (*briav1.ImportXpubResponse, error) {
 	req := &briav1.ImportXpubRequest{
 		Name:       name,

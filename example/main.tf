@@ -30,6 +30,15 @@ resource "bria_profile" "example" {
   name = "profile-${random_string.postfix.result}"
 }
 
+resource "bria_api_key" "example" {
+  profile = bria_profile.example.name
+}
+
+output "api_key" {
+  value = bria_api_key.example.key
+  sensitive = true
+}
+
 resource "bria_xpub" "lnd" {
   name       = "lnd"
   xpub       = "tpubDDEGUyCLufbxAfQruPHkhUcu55UdhXy7otfcEQG4wqYNnMfq9DbHPxWCqpEQQAJUDi8Bq45DjcukdDAXasKJ2G27iLsvpdoEL5nTRy5TJ2B"
