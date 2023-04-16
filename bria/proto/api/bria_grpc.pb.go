@@ -19,6 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
+	BriaService_CreateProfile_FullMethodName           = "/services.bria.v1.BriaService/CreateProfile"
+	BriaService_ListProfiles_FullMethodName            = "/services.bria.v1.BriaService/ListProfiles"
+	BriaService_CreateProfileApiKey_FullMethodName     = "/services.bria.v1.BriaService/CreateProfileApiKey"
 	BriaService_ImportXpub_FullMethodName              = "/services.bria.v1.BriaService/ImportXpub"
 	BriaService_SetSignerConfig_FullMethodName         = "/services.bria.v1.BriaService/SetSignerConfig"
 	BriaService_CreateWallet_FullMethodName            = "/services.bria.v1.BriaService/CreateWallet"
@@ -34,6 +37,9 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BriaServiceClient interface {
+	CreateProfile(ctx context.Context, in *CreateProfileRequest, opts ...grpc.CallOption) (*CreateProfileResponse, error)
+	ListProfiles(ctx context.Context, in *ListProfilesRequest, opts ...grpc.CallOption) (*ListProfilesResponse, error)
+	CreateProfileApiKey(ctx context.Context, in *CreateProfileApiKeyRequest, opts ...grpc.CallOption) (*CreateProfileApiKeyResponse, error)
 	ImportXpub(ctx context.Context, in *ImportXpubRequest, opts ...grpc.CallOption) (*ImportXpubResponse, error)
 	SetSignerConfig(ctx context.Context, in *SetSignerConfigRequest, opts ...grpc.CallOption) (*SetSignerConfigResponse, error)
 	CreateWallet(ctx context.Context, in *CreateWalletRequest, opts ...grpc.CallOption) (*CreateWalletResponse, error)
@@ -51,6 +57,33 @@ type briaServiceClient struct {
 
 func NewBriaServiceClient(cc grpc.ClientConnInterface) BriaServiceClient {
 	return &briaServiceClient{cc}
+}
+
+func (c *briaServiceClient) CreateProfile(ctx context.Context, in *CreateProfileRequest, opts ...grpc.CallOption) (*CreateProfileResponse, error) {
+	out := new(CreateProfileResponse)
+	err := c.cc.Invoke(ctx, BriaService_CreateProfile_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *briaServiceClient) ListProfiles(ctx context.Context, in *ListProfilesRequest, opts ...grpc.CallOption) (*ListProfilesResponse, error) {
+	out := new(ListProfilesResponse)
+	err := c.cc.Invoke(ctx, BriaService_ListProfiles_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *briaServiceClient) CreateProfileApiKey(ctx context.Context, in *CreateProfileApiKeyRequest, opts ...grpc.CallOption) (*CreateProfileApiKeyResponse, error) {
+	out := new(CreateProfileApiKeyResponse)
+	err := c.cc.Invoke(ctx, BriaService_CreateProfileApiKey_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *briaServiceClient) ImportXpub(ctx context.Context, in *ImportXpubRequest, opts ...grpc.CallOption) (*ImportXpubResponse, error) {
@@ -138,6 +171,9 @@ func (c *briaServiceClient) ListPayouts(ctx context.Context, in *ListPayoutsRequ
 // All implementations must embed UnimplementedBriaServiceServer
 // for forward compatibility
 type BriaServiceServer interface {
+	CreateProfile(context.Context, *CreateProfileRequest) (*CreateProfileResponse, error)
+	ListProfiles(context.Context, *ListProfilesRequest) (*ListProfilesResponse, error)
+	CreateProfileApiKey(context.Context, *CreateProfileApiKeyRequest) (*CreateProfileApiKeyResponse, error)
 	ImportXpub(context.Context, *ImportXpubRequest) (*ImportXpubResponse, error)
 	SetSignerConfig(context.Context, *SetSignerConfigRequest) (*SetSignerConfigResponse, error)
 	CreateWallet(context.Context, *CreateWalletRequest) (*CreateWalletResponse, error)
@@ -154,6 +190,15 @@ type BriaServiceServer interface {
 type UnimplementedBriaServiceServer struct {
 }
 
+func (UnimplementedBriaServiceServer) CreateProfile(context.Context, *CreateProfileRequest) (*CreateProfileResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateProfile not implemented")
+}
+func (UnimplementedBriaServiceServer) ListProfiles(context.Context, *ListProfilesRequest) (*ListProfilesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListProfiles not implemented")
+}
+func (UnimplementedBriaServiceServer) CreateProfileApiKey(context.Context, *CreateProfileApiKeyRequest) (*CreateProfileApiKeyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateProfileApiKey not implemented")
+}
 func (UnimplementedBriaServiceServer) ImportXpub(context.Context, *ImportXpubRequest) (*ImportXpubResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ImportXpub not implemented")
 }
@@ -192,6 +237,60 @@ type UnsafeBriaServiceServer interface {
 
 func RegisterBriaServiceServer(s grpc.ServiceRegistrar, srv BriaServiceServer) {
 	s.RegisterService(&BriaService_ServiceDesc, srv)
+}
+
+func _BriaService_CreateProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateProfileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BriaServiceServer).CreateProfile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BriaService_CreateProfile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BriaServiceServer).CreateProfile(ctx, req.(*CreateProfileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BriaService_ListProfiles_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListProfilesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BriaServiceServer).ListProfiles(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BriaService_ListProfiles_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BriaServiceServer).ListProfiles(ctx, req.(*ListProfilesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BriaService_CreateProfileApiKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateProfileApiKeyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BriaServiceServer).CreateProfileApiKey(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BriaService_CreateProfileApiKey_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BriaServiceServer).CreateProfileApiKey(ctx, req.(*CreateProfileApiKeyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _BriaService_ImportXpub_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -363,6 +462,18 @@ var BriaService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "services.bria.v1.BriaService",
 	HandlerType: (*BriaServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateProfile",
+			Handler:    _BriaService_CreateProfile_Handler,
+		},
+		{
+			MethodName: "ListProfiles",
+			Handler:    _BriaService_ListProfiles_Handler,
+		},
+		{
+			MethodName: "CreateProfileApiKey",
+			Handler:    _BriaService_CreateProfileApiKey_Handler,
+		},
 		{
 			MethodName: "ImportXpub",
 			Handler:    _BriaService_ImportXpub_Handler,

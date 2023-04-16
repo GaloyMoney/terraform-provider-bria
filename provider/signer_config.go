@@ -7,12 +7,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func resourceBriaAccountSignerConfig() *schema.Resource {
+func resourceBriaSignerConfig() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceBriaAccountSignerConfigCreate,
-		Update: resourceBriaAccountSignerConfigUpdate,
-		Read:   resourceBriaAccountSignerConfigRead,
-		Delete: resourceBriaAccountSignerConfigDelete,
+		Create: resourceBriaSignerConfigCreate,
+		Update: resourceBriaSignerConfigUpdate,
+		Read:   resourceBriaSignerConfigRead,
+		Delete: resourceBriaSignerConfigDelete,
 
 		Schema: map[string]*schema.Schema{
 			"xpub": {
@@ -53,7 +53,7 @@ func lndConfigElem() *schema.Resource {
 	}
 }
 
-func resourceBriaAccountSignerConfigCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceBriaSignerConfigCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*bria.AccountClient)
 
 	xpub := d.Get("xpub").(string)
@@ -71,22 +71,22 @@ func resourceBriaAccountSignerConfigCreate(d *schema.ResourceData, meta interfac
 
 	d.SetId(xpub)
 
-	return resourceBriaAccountSignerConfigRead(d, meta)
+	return resourceBriaSignerConfigRead(d, meta)
 }
 
-func resourceBriaAccountSignerConfigRead(d *schema.ResourceData, meta interface{}) error {
+func resourceBriaSignerConfigRead(d *schema.ResourceData, meta interface{}) error {
 	// Implement the read function for the bria_account_signer_config resource
 	// This can be a no-op if there is no way to read a signer config from the API
 	return nil
 }
 
-func resourceBriaAccountSignerConfigDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceBriaSignerConfigDelete(d *schema.ResourceData, meta interface{}) error {
 	// Implement the delete function for the bria_account_signer_config resource
 	// If the API does not provide a delete functionality, you can set the ID to an empty string
 	d.SetId("")
 	return nil
 }
 
-func resourceBriaAccountSignerConfigUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceBriaSignerConfigUpdate(d *schema.ResourceData, meta interface{}) error {
 	return fmt.Errorf("briaaccount_update resource does not support updates")
 }

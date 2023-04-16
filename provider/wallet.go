@@ -7,12 +7,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func resourceBriaAccountWallet() *schema.Resource {
+func resourceBriaWallet() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceBriaAccountWalletCreate,
-		Update: resourceBriaAccountWalletUpdate,
-		Read:   resourceBriaAccountWalletRead,
-		Delete: resourceBriaAccountWalletSoftDelete,
+		Create: resourceBriaWalletCreate,
+		Update: resourceBriaWalletUpdate,
+		Read:   resourceBriaWalletRead,
+		Delete: resourceBriaWalletSoftDelete,
 
 		Schema: map[string]*schema.Schema{
 			"name": {
@@ -35,7 +35,7 @@ func resourceBriaAccountWallet() *schema.Resource {
 	}
 }
 
-func resourceBriaAccountWalletCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceBriaWalletCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*bria.AccountClient)
 
 	name := d.Get("name").(string)
@@ -52,20 +52,20 @@ func resourceBriaAccountWalletCreate(d *schema.ResourceData, meta interface{}) e
 
 	d.SetId(resp.Id)
 
-	return resourceBriaAccountWalletRead(d, meta)
+	return resourceBriaWalletRead(d, meta)
 }
 
-func resourceBriaAccountWalletRead(d *schema.ResourceData, meta interface{}) error {
+func resourceBriaWalletRead(d *schema.ResourceData, meta interface{}) error {
 	// Implement the read function for the bria_account_wallet resource
 	// This can be a no-op if there is no way to read a wallet from the API
 	return nil
 }
 
-func resourceBriaAccountWalletUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceBriaWalletUpdate(d *schema.ResourceData, meta interface{}) error {
 	return fmt.Errorf("briaaccount_wallet resource does not support updates")
 }
 
-func resourceBriaAccountWalletSoftDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceBriaWalletSoftDelete(d *schema.ResourceData, meta interface{}) error {
 	// Implement the soft delete function for the bria_account_wallet resource
 	// If the API does not provide a delete functionality, you can set the ID to an empty string
 	d.SetId("")

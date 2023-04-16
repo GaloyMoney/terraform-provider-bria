@@ -5,6 +5,9 @@ package services.bria.v1;
 option go_package = "github.com/GaloyMoney/terraform-provider-bria/client/proto/briav1";
 
 service BriaService {
+  rpc CreateProfile (CreateProfileRequest) returns (CreateProfileResponse) {}
+  rpc ListProfiles (ListProfilesRequest) returns (ListProfilesResponse) {}
+  rpc CreateProfileApiKey (CreateProfileApiKeyRequest) returns (CreateProfileApiKeyResponse) {}
   rpc ImportXpub (ImportXpubRequest) returns (ImportXpubResponse) {}
   rpc SetSignerConfig (SetSignerConfigRequest) returns (SetSignerConfigResponse) {}
   rpc CreateWallet (CreateWalletRequest) returns (CreateWalletResponse) {}
@@ -14,6 +17,34 @@ service BriaService {
   rpc CreateBatchGroup (CreateBatchGroupRequest) returns (CreateBatchGroupResponse) {}
   rpc QueuePayout (QueuePayoutRequest) returns (QueuePayoutResponse) {}
   rpc ListPayouts (ListPayoutsRequest) returns (ListPayoutsResponse) {}
+}
+
+message CreateProfileRequest {
+  string name = 1;
+}
+
+message CreateProfileResponse {
+  string id = 1;
+}
+
+message CreateProfileApiKeyRequest {
+  string profile_name = 1;
+}
+
+message CreateProfileApiKeyResponse {
+  string id = 1;
+  string key = 2;
+}
+
+message ListProfilesRequest {}
+
+message Profile {
+  string id = 1;
+  string name = 2;
+}
+
+message ListProfilesResponse {
+  repeated Profile profiles = 1;
 }
 
 message ImportXpubRequest {
@@ -62,19 +93,18 @@ message ListUtxosRequest {
   string wallet_name = 1;
 }
 
-message WalletUtxo {
+message Utxo {
   string outpoint = 1;
   uint32 address_idx = 2;
   uint64 value = 3;
   optional string address = 4;
   bool change_output = 5;
-  bool spent = 6;
-  optional uint32 block_height = 7;
+  optional uint32 block_height = 6;
 }
 
 message KeychainUtxos {
   string keychain_id = 1;
-  repeated WalletUtxo utxos = 2;
+  repeated Utxo utxos = 2;
 }
 
 enum KeychainKind {
@@ -93,12 +123,16 @@ message GetWalletBalanceSummaryRequest {
 }
 
 message GetWalletBalanceSummaryResponse {
-  uint64 pending_incoming = 1;
-  uint64 encumbered_fees = 2;
-  uint64 current_settled = 3;
-  uint64 encumbered_outgoing = 4;
-  uint64 pending_outgoing = 5;
-  uint64 pending_fees = 6;
+  uint64 encumbered_incoming_utxos = 1;
+  uint64 pending_incoming_utxos = 2;
+  uint64 confirmed_utxos = 3;
+  uint64 pending_outgoing_utxos = 4;
+  uint64 pending_fees = 5;
+  uint64 encumbered_fees = 7;
+  uint64 logical_pending_income = 8;
+  uint64 logical_settled = 9;
+  uint64 logical_pending_outgoing = 10;
+  uint64 logical_encumbered_outgoing = 11;
 }
 
 message CreateBatchGroupRequest {

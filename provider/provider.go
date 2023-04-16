@@ -23,9 +23,9 @@ func Provider() *schema.Provider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"bria_xpub":          resourceBriaAccountXpub(),
-			"bria_wallet":        resourceBriaAccountWallet(),
-			"bria_signer_config": resourceBriaAccountSignerConfig(),
+			"bria_xpub":          resourceBriaXpub(),
+			"bria_wallet":        resourceBriaWallet(),
+			"bria_signer_config": resourceBriaSignerConfig(),
 			"bria_batch_group":   resourceBatchGroup(),
 		},
 

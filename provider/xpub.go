@@ -7,12 +7,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func resourceBriaAccountXpub() *schema.Resource {
+func resourceBriaXpub() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceBriaAccountXpubCreate,
-		Read:   resourceBriaAccountXpubRead,
-		Update: resourceBriaAccountXpubUpdate,
-		Delete: resourceBriaAccountXpubSoftDelete,
+		Create: resourceBriaXpubCreate,
+		Read:   resourceBriaXpubRead,
+		Update: resourceBriaXpubUpdate,
+		Delete: resourceBriaXpubSoftDelete,
 
 		Schema: map[string]*schema.Schema{
 			"name": {
@@ -39,7 +39,7 @@ func resourceBriaAccountXpub() *schema.Resource {
 	}
 }
 
-func resourceBriaAccountXpubCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceBriaXpubCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*bria.AccountClient)
 
 	name := d.Get("name").(string)
@@ -53,22 +53,22 @@ func resourceBriaAccountXpubCreate(d *schema.ResourceData, meta interface{}) err
 
 	d.SetId(resp.Id)
 
-	return resourceBriaAccountXpubRead(d, meta)
+	return resourceBriaXpubRead(d, meta)
 }
 
-func resourceBriaAccountXpubRead(d *schema.ResourceData, meta interface{}) error {
+func resourceBriaXpubRead(d *schema.ResourceData, meta interface{}) error {
 	// Implement the read function for the bria_account_xpub resource
 	// This can be a no-op if there is no way to read an xpub from the API
 	return nil
 }
 
-func resourceBriaAccountXpubSoftDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceBriaXpubSoftDelete(d *schema.ResourceData, meta interface{}) error {
 	// Implement the soft delete function for the bria_account_xpub resource
 	// If the API does not provide a delete functionality, you can set the ID to an empty string
 	d.SetId("")
 	return nil
 }
 
-func resourceBriaAccountXpubUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceBriaXpubUpdate(d *schema.ResourceData, meta interface{}) error {
 	return fmt.Errorf("briaaccount_xpub resource does not support updates")
 }
