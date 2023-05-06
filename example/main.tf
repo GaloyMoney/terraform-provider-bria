@@ -47,7 +47,11 @@ resource "bria_xpub" "lnd" {
 
 resource "bria_wallet" "example" {
   name  = "example"
-  xpubs = [bria_xpub.lnd.id]
+  keychain {
+    wpkh {
+      xpub = bria_xpub.lnd.id
+    }
+  }
 }
 
 resource "bria_signer_config" "lnd" {

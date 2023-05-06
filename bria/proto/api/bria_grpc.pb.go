@@ -19,18 +19,25 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	BriaService_CreateProfile_FullMethodName           = "/services.bria.v1.BriaService/CreateProfile"
-	BriaService_ListProfiles_FullMethodName            = "/services.bria.v1.BriaService/ListProfiles"
-	BriaService_CreateProfileApiKey_FullMethodName     = "/services.bria.v1.BriaService/CreateProfileApiKey"
-	BriaService_ImportXpub_FullMethodName              = "/services.bria.v1.BriaService/ImportXpub"
-	BriaService_SetSignerConfig_FullMethodName         = "/services.bria.v1.BriaService/SetSignerConfig"
-	BriaService_CreateWallet_FullMethodName            = "/services.bria.v1.BriaService/CreateWallet"
-	BriaService_GetWalletBalanceSummary_FullMethodName = "/services.bria.v1.BriaService/GetWalletBalanceSummary"
-	BriaService_NewAddress_FullMethodName              = "/services.bria.v1.BriaService/NewAddress"
-	BriaService_ListUtxos_FullMethodName               = "/services.bria.v1.BriaService/ListUtxos"
-	BriaService_CreateBatchGroup_FullMethodName        = "/services.bria.v1.BriaService/CreateBatchGroup"
-	BriaService_QueuePayout_FullMethodName             = "/services.bria.v1.BriaService/QueuePayout"
-	BriaService_ListPayouts_FullMethodName             = "/services.bria.v1.BriaService/ListPayouts"
+	BriaService_CreateProfile_FullMethodName            = "/services.bria.v1.BriaService/CreateProfile"
+	BriaService_ListProfiles_FullMethodName             = "/services.bria.v1.BriaService/ListProfiles"
+	BriaService_CreateProfileApiKey_FullMethodName      = "/services.bria.v1.BriaService/CreateProfileApiKey"
+	BriaService_ImportXpub_FullMethodName               = "/services.bria.v1.BriaService/ImportXpub"
+	BriaService_SetSignerConfig_FullMethodName          = "/services.bria.v1.BriaService/SetSignerConfig"
+	BriaService_CreateWallet_FullMethodName             = "/services.bria.v1.BriaService/CreateWallet"
+	BriaService_ListWallets_FullMethodName              = "/services.bria.v1.BriaService/ListWallets"
+	BriaService_GetWalletBalanceSummary_FullMethodName  = "/services.bria.v1.BriaService/GetWalletBalanceSummary"
+	BriaService_GetAccountBalanceSummary_FullMethodName = "/services.bria.v1.BriaService/GetAccountBalanceSummary"
+	BriaService_NewAddress_FullMethodName               = "/services.bria.v1.BriaService/NewAddress"
+	BriaService_UpdateAddress_FullMethodName            = "/services.bria.v1.BriaService/UpdateAddress"
+	BriaService_ListAddresses_FullMethodName            = "/services.bria.v1.BriaService/ListAddresses"
+	BriaService_ListUtxos_FullMethodName                = "/services.bria.v1.BriaService/ListUtxos"
+	BriaService_CreateBatchGroup_FullMethodName         = "/services.bria.v1.BriaService/CreateBatchGroup"
+	BriaService_ListBatchGroups_FullMethodName          = "/services.bria.v1.BriaService/ListBatchGroups"
+	BriaService_QueuePayout_FullMethodName              = "/services.bria.v1.BriaService/QueuePayout"
+	BriaService_ListPayouts_FullMethodName              = "/services.bria.v1.BriaService/ListPayouts"
+	BriaService_ListSigningSessions_FullMethodName      = "/services.bria.v1.BriaService/ListSigningSessions"
+	BriaService_SubscribeAll_FullMethodName             = "/services.bria.v1.BriaService/SubscribeAll"
 )
 
 // BriaServiceClient is the client API for BriaService service.
@@ -43,12 +50,19 @@ type BriaServiceClient interface {
 	ImportXpub(ctx context.Context, in *ImportXpubRequest, opts ...grpc.CallOption) (*ImportXpubResponse, error)
 	SetSignerConfig(ctx context.Context, in *SetSignerConfigRequest, opts ...grpc.CallOption) (*SetSignerConfigResponse, error)
 	CreateWallet(ctx context.Context, in *CreateWalletRequest, opts ...grpc.CallOption) (*CreateWalletResponse, error)
+	ListWallets(ctx context.Context, in *ListWalletsRequest, opts ...grpc.CallOption) (*ListWalletsResponse, error)
 	GetWalletBalanceSummary(ctx context.Context, in *GetWalletBalanceSummaryRequest, opts ...grpc.CallOption) (*GetWalletBalanceSummaryResponse, error)
+	GetAccountBalanceSummary(ctx context.Context, in *GetAccountBalanceSummaryRequest, opts ...grpc.CallOption) (*GetAccountBalanceSummaryResponse, error)
 	NewAddress(ctx context.Context, in *NewAddressRequest, opts ...grpc.CallOption) (*NewAddressResponse, error)
+	UpdateAddress(ctx context.Context, in *UpdateAddressRequest, opts ...grpc.CallOption) (*UpdateAddressResponse, error)
+	ListAddresses(ctx context.Context, in *ListAddressesRequest, opts ...grpc.CallOption) (*ListAddressesResponse, error)
 	ListUtxos(ctx context.Context, in *ListUtxosRequest, opts ...grpc.CallOption) (*ListUtxosResponse, error)
 	CreateBatchGroup(ctx context.Context, in *CreateBatchGroupRequest, opts ...grpc.CallOption) (*CreateBatchGroupResponse, error)
+	ListBatchGroups(ctx context.Context, in *ListBatchGroupsRequest, opts ...grpc.CallOption) (*ListBatchGroupsResponse, error)
 	QueuePayout(ctx context.Context, in *QueuePayoutRequest, opts ...grpc.CallOption) (*QueuePayoutResponse, error)
 	ListPayouts(ctx context.Context, in *ListPayoutsRequest, opts ...grpc.CallOption) (*ListPayoutsResponse, error)
+	ListSigningSessions(ctx context.Context, in *ListSigningSessionsRequest, opts ...grpc.CallOption) (*ListSigningSessionsResponse, error)
+	SubscribeAll(ctx context.Context, in *SubscribeAllRequest, opts ...grpc.CallOption) (BriaService_SubscribeAllClient, error)
 }
 
 type briaServiceClient struct {
@@ -113,6 +127,15 @@ func (c *briaServiceClient) CreateWallet(ctx context.Context, in *CreateWalletRe
 	return out, nil
 }
 
+func (c *briaServiceClient) ListWallets(ctx context.Context, in *ListWalletsRequest, opts ...grpc.CallOption) (*ListWalletsResponse, error) {
+	out := new(ListWalletsResponse)
+	err := c.cc.Invoke(ctx, BriaService_ListWallets_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *briaServiceClient) GetWalletBalanceSummary(ctx context.Context, in *GetWalletBalanceSummaryRequest, opts ...grpc.CallOption) (*GetWalletBalanceSummaryResponse, error) {
 	out := new(GetWalletBalanceSummaryResponse)
 	err := c.cc.Invoke(ctx, BriaService_GetWalletBalanceSummary_FullMethodName, in, out, opts...)
@@ -122,9 +145,36 @@ func (c *briaServiceClient) GetWalletBalanceSummary(ctx context.Context, in *Get
 	return out, nil
 }
 
+func (c *briaServiceClient) GetAccountBalanceSummary(ctx context.Context, in *GetAccountBalanceSummaryRequest, opts ...grpc.CallOption) (*GetAccountBalanceSummaryResponse, error) {
+	out := new(GetAccountBalanceSummaryResponse)
+	err := c.cc.Invoke(ctx, BriaService_GetAccountBalanceSummary_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *briaServiceClient) NewAddress(ctx context.Context, in *NewAddressRequest, opts ...grpc.CallOption) (*NewAddressResponse, error) {
 	out := new(NewAddressResponse)
 	err := c.cc.Invoke(ctx, BriaService_NewAddress_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *briaServiceClient) UpdateAddress(ctx context.Context, in *UpdateAddressRequest, opts ...grpc.CallOption) (*UpdateAddressResponse, error) {
+	out := new(UpdateAddressResponse)
+	err := c.cc.Invoke(ctx, BriaService_UpdateAddress_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *briaServiceClient) ListAddresses(ctx context.Context, in *ListAddressesRequest, opts ...grpc.CallOption) (*ListAddressesResponse, error) {
+	out := new(ListAddressesResponse)
+	err := c.cc.Invoke(ctx, BriaService_ListAddresses_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -149,6 +199,15 @@ func (c *briaServiceClient) CreateBatchGroup(ctx context.Context, in *CreateBatc
 	return out, nil
 }
 
+func (c *briaServiceClient) ListBatchGroups(ctx context.Context, in *ListBatchGroupsRequest, opts ...grpc.CallOption) (*ListBatchGroupsResponse, error) {
+	out := new(ListBatchGroupsResponse)
+	err := c.cc.Invoke(ctx, BriaService_ListBatchGroups_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *briaServiceClient) QueuePayout(ctx context.Context, in *QueuePayoutRequest, opts ...grpc.CallOption) (*QueuePayoutResponse, error) {
 	out := new(QueuePayoutResponse)
 	err := c.cc.Invoke(ctx, BriaService_QueuePayout_FullMethodName, in, out, opts...)
@@ -167,6 +226,47 @@ func (c *briaServiceClient) ListPayouts(ctx context.Context, in *ListPayoutsRequ
 	return out, nil
 }
 
+func (c *briaServiceClient) ListSigningSessions(ctx context.Context, in *ListSigningSessionsRequest, opts ...grpc.CallOption) (*ListSigningSessionsResponse, error) {
+	out := new(ListSigningSessionsResponse)
+	err := c.cc.Invoke(ctx, BriaService_ListSigningSessions_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *briaServiceClient) SubscribeAll(ctx context.Context, in *SubscribeAllRequest, opts ...grpc.CallOption) (BriaService_SubscribeAllClient, error) {
+	stream, err := c.cc.NewStream(ctx, &BriaService_ServiceDesc.Streams[0], BriaService_SubscribeAll_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &briaServiceSubscribeAllClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type BriaService_SubscribeAllClient interface {
+	Recv() (*BriaEvent, error)
+	grpc.ClientStream
+}
+
+type briaServiceSubscribeAllClient struct {
+	grpc.ClientStream
+}
+
+func (x *briaServiceSubscribeAllClient) Recv() (*BriaEvent, error) {
+	m := new(BriaEvent)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // BriaServiceServer is the server API for BriaService service.
 // All implementations must embed UnimplementedBriaServiceServer
 // for forward compatibility
@@ -177,12 +277,19 @@ type BriaServiceServer interface {
 	ImportXpub(context.Context, *ImportXpubRequest) (*ImportXpubResponse, error)
 	SetSignerConfig(context.Context, *SetSignerConfigRequest) (*SetSignerConfigResponse, error)
 	CreateWallet(context.Context, *CreateWalletRequest) (*CreateWalletResponse, error)
+	ListWallets(context.Context, *ListWalletsRequest) (*ListWalletsResponse, error)
 	GetWalletBalanceSummary(context.Context, *GetWalletBalanceSummaryRequest) (*GetWalletBalanceSummaryResponse, error)
+	GetAccountBalanceSummary(context.Context, *GetAccountBalanceSummaryRequest) (*GetAccountBalanceSummaryResponse, error)
 	NewAddress(context.Context, *NewAddressRequest) (*NewAddressResponse, error)
+	UpdateAddress(context.Context, *UpdateAddressRequest) (*UpdateAddressResponse, error)
+	ListAddresses(context.Context, *ListAddressesRequest) (*ListAddressesResponse, error)
 	ListUtxos(context.Context, *ListUtxosRequest) (*ListUtxosResponse, error)
 	CreateBatchGroup(context.Context, *CreateBatchGroupRequest) (*CreateBatchGroupResponse, error)
+	ListBatchGroups(context.Context, *ListBatchGroupsRequest) (*ListBatchGroupsResponse, error)
 	QueuePayout(context.Context, *QueuePayoutRequest) (*QueuePayoutResponse, error)
 	ListPayouts(context.Context, *ListPayoutsRequest) (*ListPayoutsResponse, error)
+	ListSigningSessions(context.Context, *ListSigningSessionsRequest) (*ListSigningSessionsResponse, error)
+	SubscribeAll(*SubscribeAllRequest, BriaService_SubscribeAllServer) error
 	mustEmbedUnimplementedBriaServiceServer()
 }
 
@@ -208,11 +315,23 @@ func (UnimplementedBriaServiceServer) SetSignerConfig(context.Context, *SetSigne
 func (UnimplementedBriaServiceServer) CreateWallet(context.Context, *CreateWalletRequest) (*CreateWalletResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateWallet not implemented")
 }
+func (UnimplementedBriaServiceServer) ListWallets(context.Context, *ListWalletsRequest) (*ListWalletsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListWallets not implemented")
+}
 func (UnimplementedBriaServiceServer) GetWalletBalanceSummary(context.Context, *GetWalletBalanceSummaryRequest) (*GetWalletBalanceSummaryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetWalletBalanceSummary not implemented")
 }
+func (UnimplementedBriaServiceServer) GetAccountBalanceSummary(context.Context, *GetAccountBalanceSummaryRequest) (*GetAccountBalanceSummaryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAccountBalanceSummary not implemented")
+}
 func (UnimplementedBriaServiceServer) NewAddress(context.Context, *NewAddressRequest) (*NewAddressResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method NewAddress not implemented")
+}
+func (UnimplementedBriaServiceServer) UpdateAddress(context.Context, *UpdateAddressRequest) (*UpdateAddressResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateAddress not implemented")
+}
+func (UnimplementedBriaServiceServer) ListAddresses(context.Context, *ListAddressesRequest) (*ListAddressesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListAddresses not implemented")
 }
 func (UnimplementedBriaServiceServer) ListUtxos(context.Context, *ListUtxosRequest) (*ListUtxosResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListUtxos not implemented")
@@ -220,11 +339,20 @@ func (UnimplementedBriaServiceServer) ListUtxos(context.Context, *ListUtxosReque
 func (UnimplementedBriaServiceServer) CreateBatchGroup(context.Context, *CreateBatchGroupRequest) (*CreateBatchGroupResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateBatchGroup not implemented")
 }
+func (UnimplementedBriaServiceServer) ListBatchGroups(context.Context, *ListBatchGroupsRequest) (*ListBatchGroupsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListBatchGroups not implemented")
+}
 func (UnimplementedBriaServiceServer) QueuePayout(context.Context, *QueuePayoutRequest) (*QueuePayoutResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueuePayout not implemented")
 }
 func (UnimplementedBriaServiceServer) ListPayouts(context.Context, *ListPayoutsRequest) (*ListPayoutsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListPayouts not implemented")
+}
+func (UnimplementedBriaServiceServer) ListSigningSessions(context.Context, *ListSigningSessionsRequest) (*ListSigningSessionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListSigningSessions not implemented")
+}
+func (UnimplementedBriaServiceServer) SubscribeAll(*SubscribeAllRequest, BriaService_SubscribeAllServer) error {
+	return status.Errorf(codes.Unimplemented, "method SubscribeAll not implemented")
 }
 func (UnimplementedBriaServiceServer) mustEmbedUnimplementedBriaServiceServer() {}
 
@@ -347,6 +475,24 @@ func _BriaService_CreateWallet_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _BriaService_ListWallets_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListWalletsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BriaServiceServer).ListWallets(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BriaService_ListWallets_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BriaServiceServer).ListWallets(ctx, req.(*ListWalletsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _BriaService_GetWalletBalanceSummary_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetWalletBalanceSummaryRequest)
 	if err := dec(in); err != nil {
@@ -365,6 +511,24 @@ func _BriaService_GetWalletBalanceSummary_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
+func _BriaService_GetAccountBalanceSummary_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAccountBalanceSummaryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BriaServiceServer).GetAccountBalanceSummary(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BriaService_GetAccountBalanceSummary_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BriaServiceServer).GetAccountBalanceSummary(ctx, req.(*GetAccountBalanceSummaryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _BriaService_NewAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(NewAddressRequest)
 	if err := dec(in); err != nil {
@@ -379,6 +543,42 @@ func _BriaService_NewAddress_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(BriaServiceServer).NewAddress(ctx, req.(*NewAddressRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BriaService_UpdateAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateAddressRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BriaServiceServer).UpdateAddress(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BriaService_UpdateAddress_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BriaServiceServer).UpdateAddress(ctx, req.(*UpdateAddressRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BriaService_ListAddresses_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListAddressesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BriaServiceServer).ListAddresses(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BriaService_ListAddresses_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BriaServiceServer).ListAddresses(ctx, req.(*ListAddressesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -419,6 +619,24 @@ func _BriaService_CreateBatchGroup_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _BriaService_ListBatchGroups_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListBatchGroupsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BriaServiceServer).ListBatchGroups(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BriaService_ListBatchGroups_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BriaServiceServer).ListBatchGroups(ctx, req.(*ListBatchGroupsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _BriaService_QueuePayout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueuePayoutRequest)
 	if err := dec(in); err != nil {
@@ -455,6 +673,45 @@ func _BriaService_ListPayouts_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _BriaService_ListSigningSessions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListSigningSessionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BriaServiceServer).ListSigningSessions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BriaService_ListSigningSessions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BriaServiceServer).ListSigningSessions(ctx, req.(*ListSigningSessionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BriaService_SubscribeAll_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(SubscribeAllRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(BriaServiceServer).SubscribeAll(m, &briaServiceSubscribeAllServer{stream})
+}
+
+type BriaService_SubscribeAllServer interface {
+	Send(*BriaEvent) error
+	grpc.ServerStream
+}
+
+type briaServiceSubscribeAllServer struct {
+	grpc.ServerStream
+}
+
+func (x *briaServiceSubscribeAllServer) Send(m *BriaEvent) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 // BriaService_ServiceDesc is the grpc.ServiceDesc for BriaService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -487,12 +744,28 @@ var BriaService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _BriaService_CreateWallet_Handler,
 		},
 		{
+			MethodName: "ListWallets",
+			Handler:    _BriaService_ListWallets_Handler,
+		},
+		{
 			MethodName: "GetWalletBalanceSummary",
 			Handler:    _BriaService_GetWalletBalanceSummary_Handler,
 		},
 		{
+			MethodName: "GetAccountBalanceSummary",
+			Handler:    _BriaService_GetAccountBalanceSummary_Handler,
+		},
+		{
 			MethodName: "NewAddress",
 			Handler:    _BriaService_NewAddress_Handler,
+		},
+		{
+			MethodName: "UpdateAddress",
+			Handler:    _BriaService_UpdateAddress_Handler,
+		},
+		{
+			MethodName: "ListAddresses",
+			Handler:    _BriaService_ListAddresses_Handler,
 		},
 		{
 			MethodName: "ListUtxos",
@@ -503,6 +776,10 @@ var BriaService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _BriaService_CreateBatchGroup_Handler,
 		},
 		{
+			MethodName: "ListBatchGroups",
+			Handler:    _BriaService_ListBatchGroups_Handler,
+		},
+		{
 			MethodName: "QueuePayout",
 			Handler:    _BriaService_QueuePayout_Handler,
 		},
@@ -510,7 +787,17 @@ var BriaService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "ListPayouts",
 			Handler:    _BriaService_ListPayouts_Handler,
 		},
+		{
+			MethodName: "ListSigningSessions",
+			Handler:    _BriaService_ListSigningSessions_Handler,
+		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "SubscribeAll",
+			Handler:       _BriaService_SubscribeAll_Handler,
+			ServerStreams: true,
+		},
+	},
 	Metadata: "api/bria.proto",
 }

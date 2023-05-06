@@ -17,11 +17,29 @@ description: |-
 
 ### Required
 
+- `keychain` (Block List, Min: 1, Max: 1) The keychain configuration for the wallet. (see [below for nested schema](#nestedblock--keychain))
 - `name` (String) The name of the wallet.
-- `xpubs` (List of String) A list of xpub reference IDs associated with the wallet.
 
 ### Read-Only
 
 - `id` (String) The ID of the wallet.
+
+<a id="nestedblock--keychain"></a>
+### Nested Schema for `keychain`
+
+Optional:
+
+- `wpkh` (Block List, Max: 1) A list of xpub reference IDs associated with the wallet. (see [below for nested schema](#nestedblock--keychain--wpkh))
+
+<a id="nestedblock--keychain--wpkh"></a>
+### Nested Schema for `keychain.wpkh`
+
+Required:
+
+- `xpub` (String) The xpub-ref or xpub
+
+Optional:
+
+- `derivation_path` (String) The derivation path for the xpub (if it is not a reference)
 
 

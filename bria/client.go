@@ -129,10 +129,10 @@ func (c *AccountClient) CreateLndSignerConfig(xpub string, lndConfig []interface
 	return nil
 }
 
-func (c *AccountClient) CreateWallet(name string, xpubRefs []string) (*briav1.CreateWalletResponse, error) {
+func (c *AccountClient) CreateWallet(name string, keychainConfig *briav1.KeychainConfig) (*briav1.CreateWalletResponse, error) {
 	req := &briav1.CreateWalletRequest{
-		Name:     name,
-		XpubRefs: xpubRefs,
+		Name:           name,
+		KeychainConfig: keychainConfig,
 	}
 	ctx := context.Background()
 	res, err := c.service.CreateWallet(ctx, req)

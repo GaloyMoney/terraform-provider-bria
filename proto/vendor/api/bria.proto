@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "google/protobuf/struct.proto";
+
 package services.bria.v1;
 
 option go_package = "github.com/GaloyMoney/terraform-provider-bria/client/proto/briav1";
@@ -11,12 +13,20 @@ service BriaService {
   rpc ImportXpub (ImportXpubRequest) returns (ImportXpubResponse) {}
   rpc SetSignerConfig (SetSignerConfigRequest) returns (SetSignerConfigResponse) {}
   rpc CreateWallet (CreateWalletRequest) returns (CreateWalletResponse) {}
+  rpc ListWallets (ListWalletsRequest) returns (ListWalletsResponse) {}
   rpc GetWalletBalanceSummary (GetWalletBalanceSummaryRequest) returns (GetWalletBalanceSummaryResponse) {}
+  rpc GetAccountBalanceSummary (GetAccountBalanceSummaryRequest) returns (GetAccountBalanceSummaryResponse) {}
   rpc NewAddress (NewAddressRequest) returns (NewAddressResponse) {}
+  rpc UpdateAddress (UpdateAddressRequest) returns (UpdateAddressResponse) {}
+  rpc ListAddresses (ListAddressesRequest) returns (ListAddressesResponse) {}
   rpc ListUtxos (ListUtxosRequest) returns (ListUtxosResponse) {}
   rpc CreateBatchGroup (CreateBatchGroupRequest) returns (CreateBatchGroupResponse) {}
+  rpc ListBatchGroups (ListBatchGroupsRequest) returns (ListBatchGroupsResponse) {}
   rpc QueuePayout (QueuePayoutRequest) returns (QueuePayoutResponse) {}
   rpc ListPayouts (ListPayoutsRequest) returns (ListPayoutsResponse) {}
+  rpc ListSigningSessions (ListSigningSessionsRequest) returns (ListSigningSessionsResponse) {}
+
+  rpc SubscribeAll (SubscribeAllRequest) returns (stream BriaEvent) {}
 }
 
 message CreateProfileRequest {
@@ -61,6 +71,7 @@ message SetSignerConfigRequest {
   string xpub_ref = 1;
   oneof config {
     LndSignerConfig lnd = 2;
+    BitcoindSignerConfig bitcoind = 3;
   }
 }
 
@@ -70,23 +81,87 @@ message LndSignerConfig {
   string macaroon_base64 = 3;
 }
 
+message BitcoindSignerConfig {
+  string endpoint = 1;
+  string rpc_user = 2;
+  string rpc_password = 3;
+}
+
 message SetSignerConfigResponse {}
+
+message KeychainConfig {
+    message Wpkh {
+        string xpub = 1;
+        optional string derivation_path = 2;
+    }
+    message Descriptors {
+        string external = 1;
+        string internal = 2;
+    }
+    oneof config {
+        Wpkh wpkh = 1;
+        Descriptors descriptors = 2;
+    }
+}
 
 message CreateWalletRequest {
   string name = 1;
-  repeated string xpub_refs = 2;
+  KeychainConfig keychain_config = 2;
 }
 
 message CreateWalletResponse {
   string id = 1;
+  repeated string xpub_ids = 2;
+}
+
+message ListWalletsRequest {}
+
+message ListWalletsResponse {
+  repeated Wallet wallets = 1;
+}
+
+message Wallet {
+  string id = 1;
+  string name = 2;
+  WalletConfig config = 3;
+}
+
+message WalletConfig {
+  uint32 settle_income_after_n_confs = 1;
+  uint32 settle_change_after_n_confs = 2;
 }
 
 message NewAddressRequest {
   string wallet_name = 1;
+  optional string external_id = 2;
+  optional google.protobuf.Struct metadata = 3;
 }
 
 message NewAddressResponse {
   string address = 1;
+}
+
+message UpdateAddressRequest {
+  string address = 2;
+  optional string new_external_id = 3;
+  optional google.protobuf.Struct new_metadata = 4;
+}
+
+message UpdateAddressResponse { }
+
+message ListAddressesRequest {
+  string wallet_name = 1;
+}
+
+message ListAddressesResponse {
+  string wallet_id = 1;
+  repeated WalletAddress addresses = 2;
+}
+
+message WalletAddress {
+  string address = 1;
+  string external_id = 2;
+  optional google.protobuf.Struct metadata = 3;
 }
 
 message ListUtxosRequest {
@@ -123,16 +198,31 @@ message GetWalletBalanceSummaryRequest {
 }
 
 message GetWalletBalanceSummaryResponse {
-  uint64 encumbered_incoming_utxos = 1;
-  uint64 pending_incoming_utxos = 2;
-  uint64 confirmed_utxos = 3;
-  uint64 pending_outgoing_utxos = 4;
-  uint64 pending_fees = 5;
-  uint64 encumbered_fees = 7;
-  uint64 logical_pending_income = 8;
-  uint64 logical_settled = 9;
-  uint64 logical_pending_outgoing = 10;
-  uint64 logical_encumbered_outgoing = 11;
+  uint64 logical_pending_income = 1;
+  uint64 logical_settled = 2;
+  uint64 logical_pending_outgoing = 3;
+  uint64 logical_encumbered_outgoing = 4;
+  uint64 encumbered_incoming_utxos = 5;
+  uint64 pending_incoming_utxos = 6;
+  uint64 settled_utxos = 7;
+  uint64 pending_outgoing_utxos = 8;
+  uint64 pending_fees = 9;
+  uint64 encumbered_fees = 10;
+}
+
+message GetAccountBalanceSummaryRequest {}
+
+message GetAccountBalanceSummaryResponse {
+  uint64 logical_pending_income = 1;
+  uint64 logical_settled = 2;
+  uint64 logical_pending_outgoing = 3;
+  uint64 logical_encumbered_outgoing = 4;
+  uint64 encumbered_incoming_utxos = 5;
+  uint64 pending_incoming_utxos = 6;
+  uint64 settled_utxos = 7;
+  uint64 pending_outgoing_utxos = 8;
+  uint64 pending_fees = 9;
+  uint64 encumbered_fees = 10;
 }
 
 message CreateBatchGroupRequest {
@@ -161,13 +251,26 @@ message CreateBatchGroupResponse {
   string id = 1;
 }
 
+message BatchGroup {
+  string id = 1;
+  string name = 2;
+  BatchGroupConfig config = 3;
+}
+
+message ListBatchGroupsResponse {
+  repeated BatchGroup batch_groups = 1;
+}
+
+message ListBatchGroupsRequest {}
+
 message QueuePayoutRequest {
   string wallet_name = 1;
   string batch_group_name = 2;
-  oneof destination { 
+  oneof destination {
     string onchain_address = 3;
   };
   uint64 satoshis = 4;
+  optional google.protobuf.Struct metadata = 5;
 }
 
 message QueuePayoutResponse {
@@ -193,4 +296,57 @@ message Payout {
 
 message ListPayoutsResponse {
   repeated Payout payouts = 1;
+}
+
+message ListSigningSessionsRequest {
+  string batch_id = 1;
+}
+
+message SigningSession {
+  string id = 1;
+  string batch_id = 2;
+  string xpub_id = 3;
+  string state = 4;
+  optional string failure_reason = 5;
+}
+
+message ListSigningSessionsResponse {
+  repeated SigningSession sessions = 1;
+}
+
+message SubscribeAllRequest {
+  optional uint64 after_sequence = 1;
+  optional bool augment = 2;
+}
+
+message BriaEvent {
+  uint64 sequence = 1;
+  uint32 recorded_at = 2;
+  optional EventAugmentation augmentation = 3;
+  oneof payload {
+    UtxoDetected utxo_detected = 4;
+    UtxoSettled utxo_settled = 5;
+  }
+}
+
+message EventAugmentation {
+  optional WalletAddress address_info = 1;
+}
+
+message UtxoDetected {
+  string wallet_id = 1;
+  string tx_id = 2;
+  uint32 vout = 3;
+  uint64 satoshis = 4;
+  string address = 5;
+}
+
+message UtxoSettled {
+  string wallet_id = 1;
+  string tx_id = 2;
+  uint32 vout = 3;
+  uint64 satoshis = 4;
+  string address = 5;
+  uint32 block_height = 6;
+  uint64 block_time = 7;
 }
