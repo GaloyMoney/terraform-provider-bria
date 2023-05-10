@@ -6,7 +6,7 @@ directories:
   - path: vendor
     git:
       url: https://github.com/GaloyMoney/bria.git
-      ref: 0.0.17
+      ref: 0.0.23
     includePaths:
     - proto/**/*
     newRootPath: proto

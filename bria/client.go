@@ -63,9 +63,6 @@ func (c *AccountClient) ReadProfile(profileID string) (*briav1.Profile, error) {
 		return nil, fmt.Errorf("error fetching profiles: %w", err)
 	}
 
-	// Debug output to show the listProfilesResponse
-	fmt.Printf("List Profiles Response: %+v\n", listProfilesResponse)
-
 	var foundProfile *briav1.Profile
 	for _, profile := range listProfilesResponse.Profiles {
 		if profile.Id == profileID {
@@ -142,18 +139,56 @@ func (c *AccountClient) CreateWallet(name string, keychainConfig *briav1.Keychai
 	return res, nil
 }
 
-func (c *AccountClient) CreateBatchGroup(name string, description string, config *briav1.BatchGroupConfig) (*briav1.CreateBatchGroupResponse, error) {
+func (c *AccountClient) CreatePayoutQueue(name string, description string, config *briav1.PayoutQueueConfig) (*briav1.CreatePayoutQueueResponse, error) {
 	var descriptionPtr *string
 	if description != "" {
 		descriptionPtr = &description
 	}
-	req := &briav1.CreateBatchGroupRequest{
+	req := &briav1.CreatePayoutQueueRequest{
 		Name:        name,
 		Description: descriptionPtr,
 		Config:      config,
 	}
 	ctx := context.Background()
-	res, err := c.service.CreateBatchGroup(ctx, req)
+	res, err := c.service.CreatePayoutQueue(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (c *AccountClient) ReadPayoutQueue(queueId string) (*briav1.PayoutQueue, error) {
+	ctx := context.Background()
+
+	listPayoutQueuesRequest := &briav1.ListPayoutQueuesRequest{}
+	listPayoutQueuesResponse, err := c.service.ListPayoutQueues(ctx, listPayoutQueuesRequest)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching queues: %w", err)
+	}
+
+	var foundPayoutQueue *briav1.PayoutQueue
+	for _, queue := range listPayoutQueuesResponse.PayoutQueues {
+		if queue.Id == queueId {
+			foundPayoutQueue = queue
+			break
+		}
+	}
+
+	return foundPayoutQueue, nil
+}
+
+func (c *AccountClient) UpdatePayoutQueue(id string, description string, config *briav1.PayoutQueueConfig) (*briav1.UpdatePayoutQueueResponse, error) {
+	var descriptionPtr *string
+	if description != "" {
+		descriptionPtr = &description
+	}
+	req := &briav1.UpdatePayoutQueueRequest{
+		Id:             id,
+		NewDescription: descriptionPtr,
+		NewConfig:      config,
+	}
+	ctx := context.Background()
+	res, err := c.service.UpdatePayoutQueue(ctx, req)
 	if err != nil {
 		return nil, err
 	}

@@ -60,8 +60,8 @@ func resourceBriaProfileRead(d *schema.ResourceData, meta interface{}) error {
 		return nil
 	}
 
-	d.Set("name", profile.Name)
 	d.Set("id", profile.Id)
+	d.Set("name", profile.Name)
 
 	return nil
 }
