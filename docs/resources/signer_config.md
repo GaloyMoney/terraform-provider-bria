@@ -21,19 +21,30 @@ description: |-
 
 ### Optional
 
+- `bitcoind` (Block List, Max: 1) BitcoinD signer configuration. (see [below for nested schema](#nestedblock--bitcoind))
 - `lnd` (Block List, Max: 1) LND signer configuration. (see [below for nested schema](#nestedblock--lnd))
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
 
+<a id="nestedblock--bitcoind"></a>
+### Nested Schema for `bitcoind`
+
+Required:
+
+- `endpoint` (String) The Bitcoind endpoint.
+- `rpc_password` (String, Sensitive) The password for the Bitcoind RPC.
+- `rpc_user` (String, Sensitive) The user for the Bitcoind RPC.
+
+
 <a id="nestedblock--lnd"></a>
 ### Nested Schema for `lnd`
 
 Required:
 
-- `cert` (String) The LND certificate.
+- `cert` (String, Sensitive) The LND certificate.
 - `endpoint` (String) The LND endpoint.
-- `macaroon_base64` (String) The base64 encoded macaroon.
+- `macaroon_base64` (String, Sensitive) The base64 encoded macaroon.
 
 

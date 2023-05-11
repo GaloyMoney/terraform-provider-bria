@@ -7,7 +7,7 @@ HOSTNAME=galoymoney
 PROTO_DIR := proto/vendor
 PROTO_OUTPUT_DIR := bria/proto
 
-version = 0.0.6
+version = 0.0.7
 os_arch = $(shell go env GOOS)_$(shell go env GOARCH)
 provider_path = registry.terraform.io/galoymoney/bria/$(version)/$(os_arch)/
 
@@ -25,6 +25,8 @@ gen-proto:
 		--go-grpc_opt=paths=source_relative \
 		$(PROTO_DIR)/api/bria.proto
 
+gen-docs:
+	 go generate ./...
 
 build:
 	go build -o $(BINARY) main.go

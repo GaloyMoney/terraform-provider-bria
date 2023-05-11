@@ -21,11 +21,22 @@ func resourceBriaSignerConfig() *schema.Resource {
 				Description: "The ID of the xpub.",
 			},
 			"lnd": {
-				Type:        schema.TypeList,
-				Optional:    true,
-				MaxItems:    1,
-				Elem:        lndConfigElem(),
-				Description: "LND signer configuration.",
+				Type:          schema.TypeList,
+				Optional:      true,
+				MaxItems:      1,
+				Elem:          lndConfigElem(),
+				Description:   "LND signer configuration.",
+				ConflictsWith: []string{"bitcoind"},
+				AtLeastOneOf:  []string{"lnd", "bitcoind"},
+			},
+			"bitcoind": {
+				Type:          schema.TypeList,
+				Optional:      true,
+				MaxItems:      1,
+				Elem:          bitcoindConfigElem(),
+				Description:   "BitcoinD signer configuration.",
+				ConflictsWith: []string{"lnd"},
+				AtLeastOneOf:  []string{"lnd", "bitcoind"},
 			},
 		},
 	}
@@ -43,11 +54,37 @@ func lndConfigElem() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "The base64 encoded macaroon.",
+				Sensitive:   true,
 			},
 			"cert": {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "The LND certificate.",
+				Sensitive:   true,
+			},
+		},
+	}
+}
+
+func bitcoindConfigElem() *schema.Resource {
+	return &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"endpoint": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The Bitcoind endpoint.",
+			},
+			"rpc_user": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The user for the Bitcoind RPC.",
+				Sensitive:   true,
+			},
+			"rpc_password": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The password for the Bitcoind RPC.",
+				Sensitive:   true,
 			},
 		},
 	}
@@ -60,7 +97,9 @@ func resourceBriaSignerConfigCreate(d *schema.ResourceData, meta interface{}) er
 
 	var err error
 	if lndConfig, ok := d.GetOk("lnd"); ok {
-		err = client.CreateLndSignerConfig(xpub, lndConfig.([]interface{}))
+		err = client.SetLndSignerConfig(xpub, lndConfig.([]interface{}))
+	} else if bitcoindConfig, ok := d.GetOk("bitcoind"); ok {
+		err = client.SetBitcoindSignerConfig(xpub, bitcoindConfig.([]interface{}))
 	} else {
 		return fmt.Errorf("lnd block must be provided")
 	}
@@ -88,5 +127,24 @@ func resourceBriaSignerConfigDelete(d *schema.ResourceData, meta interface{}) er
 }
 
 func resourceBriaSignerConfigUpdate(d *schema.ResourceData, meta interface{}) error {
-	return fmt.Errorf("briaaccount_update resource does not support updates")
+	client := meta.(*bria.AccountClient)
+
+	xpub := d.Get("xpub").(string)
+
+	var err error
+	if lndConfig, ok := d.GetOk("lnd"); ok {
+		err = client.SetLndSignerConfig(xpub, lndConfig.([]interface{}))
+	} else if bitcoindConfig, ok := d.GetOk("bitcoind"); ok {
+		err = client.SetBitcoindSignerConfig(xpub, bitcoindConfig.([]interface{}))
+	} else {
+		return fmt.Errorf("lnd block must be provided")
+	}
+
+	if err != nil {
+		return fmt.Errorf("error creating Bria signer config: %w", err)
+	}
+
+	d.SetId(xpub)
+
+	return resourceBriaSignerConfigRead(d, meta)
 }

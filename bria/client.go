@@ -100,7 +100,7 @@ func (c *AccountClient) ImportXpub(name, xpub, derivation string) (*briav1.Impor
 	return res, nil
 }
 
-func (c *AccountClient) CreateLndSignerConfig(xpub string, lndConfig []interface{}) error {
+func (c *AccountClient) SetLndSignerConfig(xpub string, lndConfig []interface{}) error {
 	lnd := lndConfig[0].(map[string]interface{})
 
 	certBase64 := base64.StdEncoding.EncodeToString([]byte(lnd["cert"].(string)))
@@ -115,6 +115,30 @@ func (c *AccountClient) CreateLndSignerConfig(xpub string, lndConfig []interface
 		XpubRef: xpub,
 		Config: &briav1.SetSignerConfigRequest_Lnd{
 			Lnd: lndSignerConfig,
+		},
+	}
+
+	_, err := c.service.SetSignerConfig(context.Background(), req)
+	if err != nil {
+		return fmt.Errorf("error setting LND signer config: %w", err)
+	}
+
+	return nil
+}
+
+func (c *AccountClient) SetBitcoindSignerConfig(xpub string, bitcoindConfig []interface{}) error {
+	bitcoind := bitcoindConfig[0].(map[string]interface{})
+
+	bitcoindSignerConfig := &briav1.BitcoindSignerConfig{
+		Endpoint:    bitcoind["endpoint"].(string),
+		RpcUser:     bitcoind["rpc_user"].(string),
+		RpcPassword: bitcoind["rpc_password"].(string),
+	}
+
+	req := &briav1.SetSignerConfigRequest{
+		XpubRef: xpub,
+		Config: &briav1.SetSignerConfigRequest_Bitcoind{
+			Bitcoind: bitcoindSignerConfig,
 		},
 	}
 
