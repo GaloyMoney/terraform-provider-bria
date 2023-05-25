@@ -37,6 +37,7 @@ const (
 	BriaService_ListPayoutQueues_FullMethodName         = "/services.bria.v1.BriaService/ListPayoutQueues"
 	BriaService_UpdatePayoutQueue_FullMethodName        = "/services.bria.v1.BriaService/UpdatePayoutQueue"
 	BriaService_SubmitPayout_FullMethodName             = "/services.bria.v1.BriaService/SubmitPayout"
+	BriaService_EstimatePayoutFee_FullMethodName        = "/services.bria.v1.BriaService/EstimatePayoutFee"
 	BriaService_ListPayouts_FullMethodName              = "/services.bria.v1.BriaService/ListPayouts"
 	BriaService_ListSigningSessions_FullMethodName      = "/services.bria.v1.BriaService/ListSigningSessions"
 	BriaService_SubscribeAll_FullMethodName             = "/services.bria.v1.BriaService/SubscribeAll"
@@ -64,6 +65,7 @@ type BriaServiceClient interface {
 	ListPayoutQueues(ctx context.Context, in *ListPayoutQueuesRequest, opts ...grpc.CallOption) (*ListPayoutQueuesResponse, error)
 	UpdatePayoutQueue(ctx context.Context, in *UpdatePayoutQueueRequest, opts ...grpc.CallOption) (*UpdatePayoutQueueResponse, error)
 	SubmitPayout(ctx context.Context, in *SubmitPayoutRequest, opts ...grpc.CallOption) (*SubmitPayoutResponse, error)
+	EstimatePayoutFee(ctx context.Context, in *EstimatePayoutFeeRequest, opts ...grpc.CallOption) (*EstimatePayoutFeeResponse, error)
 	ListPayouts(ctx context.Context, in *ListPayoutsRequest, opts ...grpc.CallOption) (*ListPayoutsResponse, error)
 	ListSigningSessions(ctx context.Context, in *ListSigningSessionsRequest, opts ...grpc.CallOption) (*ListSigningSessionsResponse, error)
 	SubscribeAll(ctx context.Context, in *SubscribeAllRequest, opts ...grpc.CallOption) (BriaService_SubscribeAllClient, error)
@@ -239,6 +241,15 @@ func (c *briaServiceClient) SubmitPayout(ctx context.Context, in *SubmitPayoutRe
 	return out, nil
 }
 
+func (c *briaServiceClient) EstimatePayoutFee(ctx context.Context, in *EstimatePayoutFeeRequest, opts ...grpc.CallOption) (*EstimatePayoutFeeResponse, error) {
+	out := new(EstimatePayoutFeeResponse)
+	err := c.cc.Invoke(ctx, BriaService_EstimatePayoutFee_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *briaServiceClient) ListPayouts(ctx context.Context, in *ListPayoutsRequest, opts ...grpc.CallOption) (*ListPayoutsResponse, error) {
 	out := new(ListPayoutsResponse)
 	err := c.cc.Invoke(ctx, BriaService_ListPayouts_FullMethodName, in, out, opts...)
@@ -311,6 +322,7 @@ type BriaServiceServer interface {
 	ListPayoutQueues(context.Context, *ListPayoutQueuesRequest) (*ListPayoutQueuesResponse, error)
 	UpdatePayoutQueue(context.Context, *UpdatePayoutQueueRequest) (*UpdatePayoutQueueResponse, error)
 	SubmitPayout(context.Context, *SubmitPayoutRequest) (*SubmitPayoutResponse, error)
+	EstimatePayoutFee(context.Context, *EstimatePayoutFeeRequest) (*EstimatePayoutFeeResponse, error)
 	ListPayouts(context.Context, *ListPayoutsRequest) (*ListPayoutsResponse, error)
 	ListSigningSessions(context.Context, *ListSigningSessionsRequest) (*ListSigningSessionsResponse, error)
 	SubscribeAll(*SubscribeAllRequest, BriaService_SubscribeAllServer) error
@@ -374,6 +386,9 @@ func (UnimplementedBriaServiceServer) UpdatePayoutQueue(context.Context, *Update
 }
 func (UnimplementedBriaServiceServer) SubmitPayout(context.Context, *SubmitPayoutRequest) (*SubmitPayoutResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitPayout not implemented")
+}
+func (UnimplementedBriaServiceServer) EstimatePayoutFee(context.Context, *EstimatePayoutFeeRequest) (*EstimatePayoutFeeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EstimatePayoutFee not implemented")
 }
 func (UnimplementedBriaServiceServer) ListPayouts(context.Context, *ListPayoutsRequest) (*ListPayoutsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListPayouts not implemented")
@@ -721,6 +736,24 @@ func _BriaService_SubmitPayout_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _BriaService_EstimatePayoutFee_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EstimatePayoutFeeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BriaServiceServer).EstimatePayoutFee(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BriaService_EstimatePayoutFee_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BriaServiceServer).EstimatePayoutFee(ctx, req.(*EstimatePayoutFeeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _BriaService_ListPayouts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListPayoutsRequest)
 	if err := dec(in); err != nil {
@@ -856,6 +889,10 @@ var BriaService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SubmitPayout",
 			Handler:    _BriaService_SubmitPayout_Handler,
+		},
+		{
+			MethodName: "EstimatePayoutFee",
+			Handler:    _BriaService_EstimatePayoutFee_Handler,
 		},
 		{
 			MethodName: "ListPayouts",
