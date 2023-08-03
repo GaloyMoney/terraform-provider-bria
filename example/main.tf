@@ -6,7 +6,7 @@ terraform {
     }
     bria = {
       source  = "galoymoney/bria"
-      version = "0.0.6"
+      version = "0.0.9"
     }
   }
 }
@@ -45,11 +45,22 @@ resource "bria_xpub" "lnd" {
   derivation = "m/64h/1h/0"
 }
 
-resource "bria_wallet" "example" {
-  name  = "example"
+resource "bria_wallet" "wpkh" {
+  name  = "wpkh"
   keychain {
     wpkh {
       xpub = bria_xpub.lnd.id
+    }
+  }
+}
+
+resource "bria_wallet" "descriptors" {
+  name  = "descriptors"
+  # private seed tprv8ZgxMBicQKsPf4w53vZs1kfFZcYu3MkxhMhuuEMZPZTGcufQVyEk2PVgiRDQ6qkG7NSsTkYVBFo4YLtv1yHHpqd4aHWmmNVb1kTqNdydjZq
+  keychain {
+    descriptors {
+      external = "wpkh([9f0a3290/84'/0'/0']tpubDDFGc53QkzeuPL7YQe9pv323VrmZhjgkHALNtA1YLgU9j8gmqrDGU1sSNrJRsxdSHF15oQ2Xs83J324cLY4Tqqx5M9wmqRJLedjn6ZEK2S3/0/*)#cxrwymse"
+      internal = "wpkh([9f0a3290/84'/0'/0']tpubDDFGc53QkzeuPL7YQe9pv323VrmZhjgkHALNtA1YLgU9j8gmqrDGU1sSNrJRsxdSHF15oQ2Xs83J324cLY4Tqqx5M9wmqRJLedjn6ZEK2S3/1/*)#fjx0ewqp"
     }
   }
 }
@@ -84,7 +95,7 @@ resource "bria_payout_queue" "interval" {
   description = "An example Bria batch group"
 
   config {
-    tx_priority = "ECONOMY"
+    tx_priority = "NEXT_BLOCK"
     consolidate_deprecated_keychains = true
     interval_secs = 3600
   }

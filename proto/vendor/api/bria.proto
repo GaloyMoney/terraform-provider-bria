@@ -10,24 +10,38 @@ service BriaService {
   rpc CreateProfile (CreateProfileRequest) returns (CreateProfileResponse) {}
   rpc ListProfiles (ListProfilesRequest) returns (ListProfilesResponse) {}
   rpc CreateProfileApiKey (CreateProfileApiKeyRequest) returns (CreateProfileApiKeyResponse) {}
+
   rpc ImportXpub (ImportXpubRequest) returns (ImportXpubResponse) {}
   rpc ListXpubs (ListXpubsRequest) returns(ListXpubsResponse) {}
   rpc SetSignerConfig (SetSignerConfigRequest) returns (SetSignerConfigResponse) {}
+
+  rpc SubmitSignedPsbt (SubmitSignedPsbtRequest) returns (SubmitSignedPsbtResponse) {}
+
   rpc CreateWallet (CreateWalletRequest) returns (CreateWalletResponse) {}
   rpc ListWallets (ListWalletsRequest) returns (ListWalletsResponse) {}
   rpc GetWalletBalanceSummary (GetWalletBalanceSummaryRequest) returns (GetWalletBalanceSummaryResponse) {}
-  rpc GetAccountBalanceSummary (GetAccountBalanceSummaryRequest) returns (GetAccountBalanceSummaryResponse) {}
+
   rpc NewAddress (NewAddressRequest) returns (NewAddressResponse) {}
   rpc UpdateAddress (UpdateAddressRequest) returns (UpdateAddressResponse) {}
   rpc ListAddresses (ListAddressesRequest) returns (ListAddressesResponse) {}
+  rpc GetAddress (GetAddressRequest) returns (GetAddressResponse) {}
+
   rpc ListUtxos (ListUtxosRequest) returns (ListUtxosResponse) {}
+
   rpc CreatePayoutQueue (CreatePayoutQueueRequest) returns (CreatePayoutQueueResponse) {}
   rpc ListPayoutQueues (ListPayoutQueuesRequest) returns (ListPayoutQueuesResponse) {}
   rpc UpdatePayoutQueue (UpdatePayoutQueueRequest) returns (UpdatePayoutQueueResponse) {}
-  rpc SubmitPayout (SubmitPayoutRequest) returns (SubmitPayoutResponse) {}
+  rpc TriggerPayoutQueue (TriggerPayoutQueueRequest) returns (TriggerPayoutQueueResponse) {}
+
   rpc EstimatePayoutFee (EstimatePayoutFeeRequest) returns (EstimatePayoutFeeResponse) {}
+  rpc SubmitPayout (SubmitPayoutRequest) returns (SubmitPayoutResponse) {}
   rpc ListPayouts (ListPayoutsRequest) returns (ListPayoutsResponse) {}
-  rpc ListSigningSessions (ListSigningSessionsRequest) returns (ListSigningSessionsResponse) {}
+  rpc GetPayout (GetPayoutRequest) returns (GetPayoutResponse) {}
+  rpc CancelPayout(CancelPayoutRequest) returns (CancelPayoutResponse) {}
+
+  rpc GetBatch (GetBatchRequest) returns (GetBatchResponse) {}
+
+  rpc GetAccountBalanceSummary (GetAccountBalanceSummaryRequest) returns (GetAccountBalanceSummaryResponse) {}
 
   rpc SubscribeAll (SubscribeAllRequest) returns (stream BriaEvent) {}
 }
@@ -92,6 +106,14 @@ message BitcoindSignerConfig {
 
 message SetSignerConfigResponse {}
 
+message SubmitSignedPsbtRequest {
+  string batch_id = 1;
+  string xpub_ref = 2; 
+  string signed_psbt = 3;
+}
+
+message SubmitSignedPsbtResponse {}
+
 message KeychainConfig {
     message Wpkh {
         string xpub = 1;
@@ -101,9 +123,14 @@ message KeychainConfig {
         string external = 1;
         string internal = 2;
     }
+    message SortedMultisig {
+        repeated string xpubs = 1;
+        uint32 threshold = 2;
+    }
     oneof config {
         Wpkh wpkh = 1;
         Descriptors descriptors = 2;
+        SortedMultisig sorted_multisig = 3;
     }
 }
 
@@ -165,6 +192,21 @@ message WalletAddress {
   string address = 1;
   string external_id = 2;
   optional google.protobuf.Struct metadata = 3;
+}
+
+message GetAddressRequest {
+  oneof identifier {
+    string address = 1;
+    string external_id = 2;
+  }
+}
+
+message GetAddressResponse{
+  optional string address = 1;
+  string wallet_id = 2;
+  bool change_address = 3;
+  optional string external_id = 4;
+  optional google.protobuf.Struct metadata = 5;
 }
 
 message ListUtxosRequest {
@@ -238,6 +280,7 @@ message PayoutQueueConfig {
   TxPriority tx_priority = 1;
   bool consolidate_deprecated_keychains = 2;
   oneof trigger {
+    bool manual = 4;
     uint32 interval_secs = 5;
   }
 }
@@ -251,6 +294,12 @@ enum TxPriority {
 message CreatePayoutQueueResponse {
   string id = 1;
 }
+
+message TriggerPayoutQueueRequest {
+  string name = 1;
+}
+
+message TriggerPayoutQueueResponse {}
 
 message PayoutQueue {
   string id = 1;
@@ -278,6 +327,7 @@ message EstimatePayoutFeeRequest {
   string payout_queue_name = 2;
   oneof destination {
     string onchain_address = 3;
+    string destination_wallet_name = 5;
   };
   uint64 satoshis = 4;
 }
@@ -291,6 +341,7 @@ message SubmitPayoutRequest {
   string payout_queue_name = 2;
   oneof destination {
     string onchain_address = 3;
+    string destination_wallet_name = 7;
   };
   uint64 satoshis = 4;
   optional string external_id = 5;
@@ -299,10 +350,16 @@ message SubmitPayoutRequest {
 
 message SubmitPayoutResponse {
   string id = 1;
+  optional uint32 batch_inclusion_estimated_at = 2;
 }
 
 message ListPayoutsRequest {
   string wallet_name = 1;
+}
+
+message BriaWalletDestination {
+  string wallet_id = 1;
+  string address = 2;
 }
 
 message Payout {
@@ -313,7 +370,9 @@ message Payout {
   uint64 satoshis = 5;
   oneof destination {
     string onchain_address = 6;
+    BriaWalletDestination wallet = 10;
   }
+  bool cancelled = 9;
   string external_id = 7;
   optional google.protobuf.Struct metadata = 8;
 }
@@ -322,8 +381,50 @@ message ListPayoutsResponse {
   repeated Payout payouts = 1;
 }
 
-message ListSigningSessionsRequest {
-  string batch_id = 1;
+message GetPayoutRequest {
+  oneof identifier {
+    string id = 1;
+    string external_id = 2;
+  }
+}
+
+message GetPayoutResponse {
+  Payout payout = 1;
+}
+
+message CancelPayoutRequest {
+  string id = 1;
+}
+
+message CancelPayoutResponse {}
+
+message GetBatchRequest {
+  string id = 1;
+}
+
+message GetBatchResponse {
+  string id = 1;
+  string payout_queue_id = 2;
+  string tx_id = 3;
+  string unsigned_psbt = 4;
+  repeated BatchWalletSummary wallet_summaries = 5;
+  repeated SigningSession signing_sessions = 6;
+}
+
+message BatchWalletSummary {
+  string wallet_id = 1;
+  uint64 total_spent_sats = 2;
+  uint64 fee_sats = 3;
+  repeated PayoutSummary payouts = 4;
+}
+
+message PayoutSummary {
+  string id = 1;
+  uint64 satoshis = 2;
+  oneof destination {
+    string onchain_address = 3;
+    BriaWalletDestination wallet = 4;
+  }
 }
 
 message SigningSession {
@@ -333,11 +434,6 @@ message SigningSession {
   string state = 4;
   optional string failure_reason = 5;
 }
-
-message ListSigningSessionsResponse {
-  repeated SigningSession sessions = 1;
-}
-
 message ListXpubsRequest {}
 
 message ListXpubsResponse {
@@ -364,7 +460,9 @@ message BriaEvent {
   oneof payload {
     UtxoDetected utxo_detected = 4;
     UtxoSettled utxo_settled = 5;
+    UtxoDropped utxo_dropped = 10;
     PayoutSubmitted payout_submitted = 6;
+    PayoutCancelled payout_cancelled = 11;
     PayoutCommitted payout_committed = 7;
     PayoutBroadcast payout_broadcast = 8;
     PayoutSettled payout_settled = 9;
@@ -394,6 +492,14 @@ message UtxoSettled {
   uint64 block_time = 7;
 }
 
+message UtxoDropped {
+  string wallet_id = 1;
+  string tx_id = 2;
+  uint32 vout = 3;
+  uint64 satoshis = 4;
+  string address = 5;
+}
+
 message PayoutSubmitted {
   string id = 1;
   string wallet_id = 2;
@@ -401,38 +507,59 @@ message PayoutSubmitted {
   uint64 satoshis = 4;
   oneof destination {
     string onchain_address = 5;
+    BriaWalletDestination wallet = 6;
+  };
+}
+
+message PayoutCancelled {
+  string id = 1;
+  string wallet_id = 2;
+  string payout_queue_id = 3;
+  uint64 satoshis = 4;
+  oneof destination {
+    string onchain_address = 5;
+    BriaWalletDestination wallet = 6;
   };
 }
 
 message PayoutCommitted {
   string id = 1;
   string tx_id = 2;
-  string wallet_id = 3;
-  string payout_queue_id = 4;
-  uint64 satoshis = 5;
+  uint32 vout = 3;
+  string wallet_id = 4;
+  string payout_queue_id = 5;
+  uint64 satoshis = 6;
   oneof destination {
-    string onchain_address = 6;
+    string onchain_address = 7;
+    BriaWalletDestination wallet = 9;
   };
+  uint64 proportional_fee_sats = 8;
 }
 
 message PayoutBroadcast {
   string id = 1;
   string tx_id = 2;
-  string wallet_id = 3;
-  string payout_queue_id = 4;
-  uint64 satoshis = 5;
+  uint32 vout = 3;
+  string wallet_id = 4;
+  string payout_queue_id = 5;
+  uint64 satoshis = 6;
   oneof destination {
-    string onchain_address = 6;
+    string onchain_address = 7;
+    BriaWalletDestination wallet = 9;
   };
+  uint64 proportional_fee_sats = 8;
 }
 
 message PayoutSettled {
   string id = 1;
   string tx_id = 2;
-  string wallet_id = 3;
-  string payout_queue_id = 4;
-  uint64 satoshis = 5;
+  uint32 vout = 3;
+  string wallet_id = 4;
+  string payout_queue_id = 5;
+  uint64 satoshis = 6;
   oneof destination {
-    string onchain_address = 6;
+    string onchain_address = 7;
+    BriaWalletDestination wallet = 9;
   };
+  uint64 proportional_fee_sats = 8;
 }

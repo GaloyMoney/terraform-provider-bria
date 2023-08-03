@@ -29,7 +29,17 @@ description: |-
 
 Optional:
 
+- `descriptors` (Block List, Max: 1) Descriptor configuration for the wallet. (see [below for nested schema](#nestedblock--keychain--descriptors))
 - `wpkh` (Block List, Max: 1) A list of xpub reference IDs associated with the wallet. (see [below for nested schema](#nestedblock--keychain--wpkh))
+
+<a id="nestedblock--keychain--descriptors"></a>
+### Nested Schema for `keychain.descriptors`
+
+Required:
+
+- `external` (String) The external descriptor
+- `internal` (String) The internal descriptor
+
 
 <a id="nestedblock--keychain--wpkh"></a>
 ### Nested Schema for `keychain.wpkh`

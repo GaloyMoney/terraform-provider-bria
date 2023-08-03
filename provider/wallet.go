@@ -39,7 +39,15 @@ func resourceBriaWallet() *schema.Resource {
 							Optional:    true,
 							MaxItems:    1,
 							Description: "A list of xpub reference IDs associated with the wallet.",
-						}}}},
+						},
+						"descriptors": {
+							Type:        schema.TypeList,
+							Elem:        descriptorsConfig(),
+							Optional:    true,
+							MaxItems:    1,
+							Description: "Descriptor configuration for the wallet.",
+						},
+					}}},
 		},
 	}
 }
@@ -61,6 +69,23 @@ func wpkhConfig() *schema.Resource {
 	}
 }
 
+func descriptorsConfig() *schema.Resource {
+	return &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"external": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The external descriptor",
+			},
+			"internal": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The internal descriptor",
+			},
+		},
+	}
+}
+
 func resourceBriaWalletCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*bria.AccountClient)
 
@@ -68,10 +93,15 @@ func resourceBriaWalletCreate(d *schema.ResourceData, meta interface{}) error {
 
 	var keychainConfig *briav1.KeychainConfig
 
+	// handle error if needed
 	if keychainRaw, ok := d.GetOk("keychain"); ok {
 		keychainList := keychainRaw.([]interface{})
 		keychainMap := keychainList[0].(map[string]interface{})
-		if wpkhRaw, ok := keychainMap["wpkh"]; ok {
+
+		wpkhRaw, wpkhOk := keychainMap["wpkh"]
+		descriptorsRaw, descriptorsOk := keychainMap["descriptors"]
+
+		if wpkhOk && len(wpkhRaw.([]interface{})) > 0 {
 			wpkhList := wpkhRaw.([]interface{})
 			wpkhMap := wpkhList[0].(map[string]interface{})
 			xpub := wpkhMap["xpub"].(string)
@@ -84,8 +114,20 @@ func resourceBriaWalletCreate(d *schema.ResourceData, meta interface{}) error {
 					},
 				},
 			}
+		} else if descriptorsOk && len(descriptorsRaw.([]interface{})) > 0 {
+			descriptorsList := descriptorsRaw.([]interface{})
+			descriptorsMap := descriptorsList[0].(map[string]interface{})
+			external := descriptorsMap["external"].(string)
+			internal := descriptorsMap["internal"].(string)
+			keychainConfig = &briav1.KeychainConfig{
+				Config: &briav1.KeychainConfig_Descriptors_{
+					Descriptors: &briav1.KeychainConfig_Descriptors{
+						External: external,
+						Internal: internal,
+					},
+				},
+			}
 		}
-		// If more keychain configurations are added in the future, handle them here.
 	}
 
 	fmt.Println(keychainConfig)
