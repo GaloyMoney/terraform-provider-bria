@@ -12,39 +12,41 @@
     flake-utils,
   }:
     flake-utils.lib.eachDefaultSystem (system: let
-      pkgs = nixpkgs.legacyPackages.${system};
-      buildDeps = with pkgs; [
-        go
-        gotools
+      pkgs = import nixpkgs {inherit system;};
+      nativeBuildInputs = with pkgs; [
         gnumake
         tfplugindocs
+        protobuf
+        protoc-gen-go
+        protoc-gen-go-grpc
       ];
-      buildInputs = with pkgs;
-        buildDeps
-        ++ [
-          protobuf
-          protoc-gen-go
-          protoc-gen-go-grpc
-          terraform
-        ];
+      buildInputs = with pkgs; [
+        go
+        gotools
+      ];
+      terraform-provider-bria = pkgs.buildGoModule {
+        pname = "terraform-provider-bria";
+        version = "0.1.0";
+
+        src = ./.;
+
+        vendorSha256 = null;
+      };
     in
-      with pkgs; rec {
+      with pkgs; {
         packages = {
-          terraform-provider-bria = buildGoModule rec {
-            pname = "terraform-provider-bria";
-            version = "0.1.0";
-
-            src = ./.;
-
-            vendorSha256 = null;
-          };
+          inherit terraform-provider-bria;
+          default = terraform-provider-bria;
         };
 
-        packages.default = packages.terraform-provider-bria;
-
         devShells.default = mkShell {
-          inherit buildInputs;
-          packages = [alejandra vendir gopls];
+          inherit buildInputs nativeBuildInputs;
+          packages = [
+            alejandra
+            vendir
+            gopls
+            terraform
+          ];
         };
 
         formatter = alejandra;
