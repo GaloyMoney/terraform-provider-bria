@@ -19,8 +19,19 @@ description: |-
 
 - `name` (String) The name of the profile.
 
+### Optional
+
+- `spending_policy` (Block List, Max: 1) (see [below for nested schema](#nestedblock--spending_policy))
+
 ### Read-Only
 
 - `id` (String) The ID of the profile.
+
+<a id="nestedblock--spending_policy"></a>
+### Nested Schema for `spending_policy`
+
+Optional:
+
+- `allowed_payout_addresses` (Set of String)
 
 

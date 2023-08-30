@@ -42,9 +42,10 @@ func (c *AccountClient) Close() {
 	c.conn.Close()
 }
 
-func (c *AccountClient) CreateProfile(name string) (*briav1.CreateProfileResponse, error) {
+func (c *AccountClient) CreateProfile(name string, policy *briav1.SpendingPolicy) (*briav1.CreateProfileResponse, error) {
 	req := &briav1.CreateProfileRequest{
-		Name: name,
+		Name:           name,
+		SpendingPolicy: policy,
 	}
 	ctx := context.Background()
 	res, err := c.service.CreateProfile(ctx, req)

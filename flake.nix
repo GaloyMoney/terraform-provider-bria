@@ -19,7 +19,7 @@
         gnumake
         tfplugindocs
       ];
-      devDeps = with pkgs;
+      buildInputs = with pkgs;
         buildDeps
         ++ [
           protobuf
@@ -43,8 +43,8 @@
         packages.default = packages.terraform-provider-bria;
 
         devShells.default = mkShell {
-          packages = [alejandra];
-          buildInputs = devDeps;
+          inherit buildInputs;
+          packages = [alejandra vendir gopls];
         };
 
         formatter = alejandra;

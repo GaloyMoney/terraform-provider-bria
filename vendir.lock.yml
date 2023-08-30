@@ -2,10 +2,10 @@ apiVersion: vendir.k14s.io/v1alpha1
 directories:
 - contents:
   - git:
-      commitTitle: 'ci(release): release version 0.1.47'
-      sha: e0a6f850dcc6a5f50b8552b10a2a1983724e820f
+      commitTitle: 'refactor: allowed_payout_addresses'
+      sha: 8fbf7bb0276e089c7180650e701c88737cb22aa6
       tags:
-      - 0.1.47
+      - 0.1.51-37-g8fbf7bb
     path: vendor
   path: ./proto
 kind: LockConfig
