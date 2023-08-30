@@ -15,6 +15,7 @@ fmt:
 	goimports -l -w .
 	go mod tidy
 	terraform fmt --recursive
+	nix fmt
 
 gen-proto:
 	mkdir -p $(PROTO_OUTPUT_DIR)

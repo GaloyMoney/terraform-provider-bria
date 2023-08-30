@@ -111,7 +111,6 @@ func resourcePayoutQueueRead(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-
 func resourcePayoutQueueUpdate(d *schema.ResourceData, m interface{}) error {
 	client := m.(*bria.AccountClient)
 

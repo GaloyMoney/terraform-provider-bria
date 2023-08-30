@@ -15,7 +15,7 @@ resource "random_string" "postfix" {
   length  = 6
   special = false
   upper   = false
-  numeric  = false
+  numeric = false
 }
 
 resource "briaadmin_account" "example" {
@@ -28,6 +28,9 @@ provider "bria" {
 
 resource "bria_profile" "example" {
   name = "profile-${random_string.postfix.result}"
+  spending_rules {
+    allowed_payout_addresses = [ "asohten" ]
+  }
 }
 
 resource "bria_api_key" "example" {
@@ -35,7 +38,7 @@ resource "bria_api_key" "example" {
 }
 
 output "api_key" {
-  value = bria_api_key.example.key
+  value     = bria_api_key.example.key
   sensitive = true
 }
 
@@ -46,7 +49,7 @@ resource "bria_xpub" "lnd" {
 }
 
 resource "bria_wallet" "wpkh" {
-  name  = "wpkh"
+  name = "wpkh"
   keychain {
     wpkh {
       xpub = bria_xpub.lnd.id
@@ -55,7 +58,7 @@ resource "bria_wallet" "wpkh" {
 }
 
 resource "bria_wallet" "descriptors" {
-  name  = "descriptors"
+  name = "descriptors"
   # private seed tprv8ZgxMBicQKsPf4w53vZs1kfFZcYu3MkxhMhuuEMZPZTGcufQVyEk2PVgiRDQ6qkG7NSsTkYVBFo4YLtv1yHHpqd4aHWmmNVb1kTqNdydjZq
   keychain {
     descriptors {
@@ -68,9 +71,9 @@ resource "bria_wallet" "descriptors" {
 resource "bria_signer_config" "lnd" {
   xpub = bria_xpub.lnd.id
   lnd {
-    endpoint = "localhost:10009"
+    endpoint        = "localhost:10009"
     macaroon_base64 = "AgEDbG5kAvgBAwoQB1FdhGa9xoewc1LEXmnURRIBMBoWCgdhZGRyZXNzEgRyZWFkEgV3cml0ZRoTCgRpbmZvEgRyZWFkEgV3cml0ZRoXCghpbnZvaWNlcxIEcmVhZBIFd3JpdGUaIQoIbWFjYXJvb24SCGdlbmVyYXRlEgRyZWFkEgV3cml0ZRoWCgdtZXNzYWdlEgRyZWFkEgV3cml0ZRoXCghvZmZjaGFpbhIEcmVhZBIFd3JpdGUaFgoHb25jaGFpbhIEcmVhZBIFd3JpdGUaFAoFcGVlcnMSBHJlYWQSBXdyaXRlGhgKBnNpZ25lchIIZ2VuZXJhdGUSBHJlYWQAAAYgqHDdwGCqx0aQL1/Z3uUfzCpeBhfapGf9s/AZPOVwf6s="
-    cert = <<EOT
+    cert            = <<EOT
 -----BEGIN CERTIFICATE-----
 MIICTzCCAfagAwIBAgIRAN7zELSxwC0+P97mtkLTDeMwCgYIKoZIzj0EAwIwODEf
 MB0GA1UEChMWbG5kIGF1dG9nZW5lcmF0ZWQgY2VydDEVMBMGA1UEAxMMYWI4NDIz
@@ -91,13 +94,13 @@ EOT
 }
 
 resource "bria_payout_queue" "interval" {
-  name = "interval-${random_string.postfix.result}"
+  name        = "interval-${random_string.postfix.result}"
   description = "An example Bria batch group"
 
   config {
-    tx_priority = "NEXT_BLOCK"
+    tx_priority                      = "NEXT_BLOCK"
     consolidate_deprecated_keychains = true
-    interval_secs = 3600
+    interval_secs                    = 3600
   }
 }
 
