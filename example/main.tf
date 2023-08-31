@@ -61,6 +61,15 @@ resource "bria_wallet" "wpkh" {
   }
 }
 
+resource "bria_static_address" "example" {
+  external_id = "example"
+  wallet      = bria_wallet.wpkh.name
+}
+
+output "static_address" {
+  value = bria_static_address.example.address
+}
+
 resource "bria_wallet" "descriptors" {
   name = "descriptors"
   # private seed tprv8ZgxMBicQKsPf4w53vZs1kfFZcYu3MkxhMhuuEMZPZTGcufQVyEk2PVgiRDQ6qkG7NSsTkYVBFo4YLtv1yHHpqd4aHWmmNVb1kTqNdydjZq

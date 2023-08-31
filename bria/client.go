@@ -55,6 +55,65 @@ func (c *AccountClient) CreateProfile(name string, policy *briav1.SpendingPolicy
 	return res, nil
 }
 
+func (c *AccountClient) CreateStaticAddress(id, wallet string) (*briav1.NewAddressResponse, error) {
+	req := &briav1.NewAddressRequest{
+		WalletName: wallet,
+		ExternalId: &id,
+	}
+	ctx := context.Background()
+	res, err := c.service.NewAddress(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (c *AccountClient) ReadStaticAddress(address string) (*briav1.GetAddressResponse, error) {
+	ctx := context.Background()
+
+	getAddressRequest := &briav1.GetAddressRequest{
+		Identifier: &briav1.GetAddressRequest_Address{
+			Address: address,
+		},
+	}
+	getAddressResponse, err := c.service.GetAddress(ctx, getAddressRequest)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching address: %w", err)
+	}
+
+	return getAddressResponse, nil
+}
+
+func (c *AccountClient) UpdateStaticAddress(address, externalId string) error {
+	ctx := context.Background()
+
+	updateAddressRequest := &briav1.UpdateAddressRequest{
+		Address:       address,
+		NewExternalId: &externalId,
+	}
+	_, err := c.service.UpdateAddress(ctx, updateAddressRequest)
+	if err != nil {
+		return fmt.Errorf("error updating address: %w", err)
+	}
+
+	return nil
+}
+
+func (c *AccountClient) DeleteStaticAddress(address string) error {
+	ctx := context.Background()
+
+	updateAddressRequest := &briav1.UpdateAddressRequest{
+		Address:       address,
+		NewExternalId: &address,
+	}
+	_, err := c.service.UpdateAddress(ctx, updateAddressRequest)
+	if err != nil {
+		return fmt.Errorf("error fetching profiles: %w", err)
+	}
+
+	return nil
+}
+
 func (c *AccountClient) ReadProfile(profileID string) (*briav1.Profile, error) {
 	ctx := context.Background()
 
