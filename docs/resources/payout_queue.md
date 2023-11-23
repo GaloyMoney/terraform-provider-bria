@@ -37,4 +37,6 @@ Required:
 - `interval_secs` (Number)
 - `tx_priority` (String)
 
+Optional: 
 
+- `cpfp_payouts_after_mins` (Number)

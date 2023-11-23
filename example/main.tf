@@ -114,6 +114,7 @@ resource "bria_payout_queue" "interval" {
     tx_priority                      = "NEXT_BLOCK"
     consolidate_deprecated_keychains = true
     interval_secs                    = 3600
+    cpfp_payouts_after_mins          = 2
   }
 }
 
