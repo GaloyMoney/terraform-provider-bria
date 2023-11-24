@@ -234,6 +234,7 @@ func (c *AccountClient) CreatePayoutQueue(name string, description string, confi
 		Config:      config,
 	}
 	ctx := context.Background()
+
 	res, err := c.service.CreatePayoutQueue(ctx, req)
 	if err != nil {
 		return nil, err

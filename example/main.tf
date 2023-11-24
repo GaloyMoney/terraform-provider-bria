@@ -6,7 +6,7 @@ terraform {
     }
     bria = {
       source  = "galoymoney/bria"
-      version = "0.0.10"
+      version = "0.0.11"
     }
   }
 }
@@ -114,6 +114,6 @@ resource "bria_payout_queue" "interval" {
     tx_priority                      = "NEXT_BLOCK"
     consolidate_deprecated_keychains = true
     interval_secs                    = 3600
+    cpfp_payouts_after_mins          = 5
   }
 }
-

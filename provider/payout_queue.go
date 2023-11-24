@@ -42,6 +42,11 @@ func resourcePayoutQueue() *schema.Resource {
 							Type:     schema.TypeInt,
 							Required: true,
 						},
+						"cpfp_payouts_after_mins": {
+							Type:     schema.TypeInt,
+							Optional: true,
+							Default:  -1,
+						},
 					},
 				},
 			},
@@ -62,6 +67,13 @@ func resourcePayoutQueueCreate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	config.Trigger = &briav1.PayoutQueueConfig_IntervalSecs{IntervalSecs: uint32(configData["interval_secs"].(int))}
+
+	if val, ok := configData["cpfp_payouts_after_mins"]; ok {
+		if val.(int) >= 0 {
+			tempVal := uint32(val.(int))
+			config.CpfpPayoutsAfterMins = &tempVal
+		}
+	}
 
 	res, err := client.CreatePayoutQueue(name, description, config)
 	if err != nil {
@@ -103,6 +115,12 @@ func resourcePayoutQueueRead(d *schema.ResourceData, meta interface{}) error {
 			config["interval_secs"] = intervalSecs.IntervalSecs
 		}
 
+		if queue.Config.CpfpPayoutsAfterMins != nil {
+			config["cpfp_payouts_after_mins"] = *queue.Config.CpfpPayoutsAfterMins
+		} else {
+			config["cpfp_payouts_after_mins"] = -1
+		}
+
 		if err := d.Set("config", []interface{}{config}); err != nil {
 			return fmt.Errorf("error setting config: %w", err)
 		}
@@ -124,6 +142,13 @@ func resourcePayoutQueueUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	config.Trigger = &briav1.PayoutQueueConfig_IntervalSecs{IntervalSecs: uint32(configData["interval_secs"].(int))}
+
+	if val, ok := configData["cpfp_payouts_after_mins"]; ok {
+		if val.(int) >= 0 {
+			tempVal := uint32(val.(int))
+			config.CpfpPayoutsAfterMins = &tempVal
+		}
+	}
 
 	_, err := client.UpdatePayoutQueue(queueId, description, config)
 	if err != nil {
