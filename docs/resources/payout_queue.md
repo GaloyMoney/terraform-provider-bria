@@ -39,6 +39,7 @@ Required:
 
 Optional:
 
+- `cpfp_payouts_after_blocks` (Number)
 - `cpfp_payouts_after_mins` (Number)
 
 
