@@ -41,5 +41,6 @@ Optional:
 
 - `cpfp_payouts_after_blocks` (Number)
 - `cpfp_payouts_after_mins` (Number)
+- `force_min_change_sats` (Number)
 
 

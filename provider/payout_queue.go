@@ -52,6 +52,11 @@ func resourcePayoutQueue() *schema.Resource {
 							Optional: true,
 							Default:  -1,
 						},
+						"force_min_change_sats": {
+							Type:     schema.TypeInt,
+							Optional: true,
+							Default:  -1,
+						},
 					},
 				},
 			},
@@ -83,6 +88,12 @@ func resourcePayoutQueueCreate(d *schema.ResourceData, m interface{}) error {
 		if val.(int) >= 0 {
 			tempVal := uint32(val.(int))
 			config.CpfpPayoutsAfterBlocks = &tempVal
+		}
+	}
+	if val, ok := configData["force_min_change_sats"]; ok {
+		if val.(int) >= 0 {
+			tempVal := uint64(val.(int))
+			config.ForceMinChangeSats = &tempVal
 		}
 	}
 
@@ -136,6 +147,11 @@ func resourcePayoutQueueRead(d *schema.ResourceData, meta interface{}) error {
 		} else {
 			config["cpfp_payouts_after_blocks"] = -1
 		}
+		if queue.Config.ForceMinChangeSats != nil {
+			config["force_min_change_sats"] = *queue.Config.ForceMinChangeSats
+		} else {
+			config["force_min_change_sats"] = -1
+		}
 
 		if err := d.Set("config", []interface{}{config}); err != nil {
 			return fmt.Errorf("error setting config: %w", err)
@@ -169,6 +185,12 @@ func resourcePayoutQueueUpdate(d *schema.ResourceData, m interface{}) error {
 		if val.(int) >= 0 {
 			tempVal := uint32(val.(int))
 			config.CpfpPayoutsAfterBlocks = &tempVal
+		}
+	}
+	if val, ok := configData["force_min_change_sats"]; ok {
+		if val.(int) >= 0 {
+			tempVal := uint64(val.(int))
+			config.ForceMinChangeSats = &tempVal
 		}
 	}
 

@@ -6,7 +6,7 @@ terraform {
     }
     bria = {
       source  = "galoymoney/bria"
-      version = "0.0.12"
+      version = "0.0.13"
     }
   }
 }
@@ -108,7 +108,7 @@ EOT
 
 resource "bria_payout_queue" "interval" {
   name        = "interval-${random_string.postfix.result}"
-  description = "An example Bria batch group"
+  description = "An example Bria payout queue"
 
   config {
     tx_priority                      = "NEXT_BLOCK"
@@ -116,5 +116,6 @@ resource "bria_payout_queue" "interval" {
     interval_secs                    = 3600
     cpfp_payouts_after_blocks        = 2
     cpfp_payouts_after_mins          = 30
+    force_min_change_sats            = 100000
   }
 }
