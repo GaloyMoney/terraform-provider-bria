@@ -6,7 +6,7 @@ terraform {
     }
     bria = {
       source  = "galoymoney/bria"
-      version = "0.0.13"
+      version = "0.0.14"
     }
   }
 }
@@ -34,6 +34,7 @@ resource "bria_profile" "restricted" {
   name = "restricted-profile-${random_string.postfix.result}"
   spending_policy {
     allowed_payout_addresses = ["mgWUuj1J1N882jmqFxtDepEC73Rr22E9GU"]
+    max_payout_sats  = 1000000
   }
 }
 

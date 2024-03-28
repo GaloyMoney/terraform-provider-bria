@@ -55,6 +55,19 @@ func (c *AccountClient) CreateProfile(name string, policy *briav1.SpendingPolicy
 	return res, nil
 }
 
+func (c *AccountClient) UpdateProfile(id string, policy *briav1.SpendingPolicy) (*briav1.UpdateProfileResponse, error) {
+	req := &briav1.UpdateProfileRequest{
+		Id:             id,
+		SpendingPolicy: policy,
+	}
+	ctx := context.Background()
+	res, err := c.service.UpdateProfile(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
 func (c *AccountClient) CreateStaticAddress(id, wallet string) (*briav1.NewAddressResponse, error) {
 	req := &briav1.NewAddressRequest{
 		WalletName: wallet,
@@ -108,7 +121,7 @@ func (c *AccountClient) DeleteStaticAddress(address string) error {
 	}
 	_, err := c.service.UpdateAddress(ctx, updateAddressRequest)
 	if err != nil {
-		return fmt.Errorf("error fetching profiles: %w", err)
+		return fmt.Errorf("error fetching static address: %w", err)
 	}
 
 	return nil

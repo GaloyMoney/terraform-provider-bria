@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	BriaService_CreateProfile_FullMethodName            = "/services.bria.v1.BriaService/CreateProfile"
+	BriaService_UpdateProfile_FullMethodName            = "/services.bria.v1.BriaService/UpdateProfile"
 	BriaService_ListProfiles_FullMethodName             = "/services.bria.v1.BriaService/ListProfiles"
 	BriaService_CreateProfileApiKey_FullMethodName      = "/services.bria.v1.BriaService/CreateProfileApiKey"
 	BriaService_ImportXpub_FullMethodName               = "/services.bria.v1.BriaService/ImportXpub"
@@ -53,6 +54,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BriaServiceClient interface {
 	CreateProfile(ctx context.Context, in *CreateProfileRequest, opts ...grpc.CallOption) (*CreateProfileResponse, error)
+	UpdateProfile(ctx context.Context, in *UpdateProfileRequest, opts ...grpc.CallOption) (*UpdateProfileResponse, error)
 	ListProfiles(ctx context.Context, in *ListProfilesRequest, opts ...grpc.CallOption) (*ListProfilesResponse, error)
 	CreateProfileApiKey(ctx context.Context, in *CreateProfileApiKeyRequest, opts ...grpc.CallOption) (*CreateProfileApiKeyResponse, error)
 	ImportXpub(ctx context.Context, in *ImportXpubRequest, opts ...grpc.CallOption) (*ImportXpubResponse, error)
@@ -92,6 +94,15 @@ func NewBriaServiceClient(cc grpc.ClientConnInterface) BriaServiceClient {
 func (c *briaServiceClient) CreateProfile(ctx context.Context, in *CreateProfileRequest, opts ...grpc.CallOption) (*CreateProfileResponse, error) {
 	out := new(CreateProfileResponse)
 	err := c.cc.Invoke(ctx, BriaService_CreateProfile_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *briaServiceClient) UpdateProfile(ctx context.Context, in *UpdateProfileRequest, opts ...grpc.CallOption) (*UpdateProfileResponse, error) {
+	out := new(UpdateProfileResponse)
+	err := c.cc.Invoke(ctx, BriaService_UpdateProfile_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -360,6 +371,7 @@ func (x *briaServiceSubscribeAllClient) Recv() (*BriaEvent, error) {
 // for forward compatibility
 type BriaServiceServer interface {
 	CreateProfile(context.Context, *CreateProfileRequest) (*CreateProfileResponse, error)
+	UpdateProfile(context.Context, *UpdateProfileRequest) (*UpdateProfileResponse, error)
 	ListProfiles(context.Context, *ListProfilesRequest) (*ListProfilesResponse, error)
 	CreateProfileApiKey(context.Context, *CreateProfileApiKeyRequest) (*CreateProfileApiKeyResponse, error)
 	ImportXpub(context.Context, *ImportXpubRequest) (*ImportXpubResponse, error)
@@ -395,6 +407,9 @@ type UnimplementedBriaServiceServer struct {
 
 func (UnimplementedBriaServiceServer) CreateProfile(context.Context, *CreateProfileRequest) (*CreateProfileResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateProfile not implemented")
+}
+func (UnimplementedBriaServiceServer) UpdateProfile(context.Context, *UpdateProfileRequest) (*UpdateProfileResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateProfile not implemented")
 }
 func (UnimplementedBriaServiceServer) ListProfiles(context.Context, *ListProfilesRequest) (*ListProfilesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListProfiles not implemented")
@@ -501,6 +516,24 @@ func _BriaService_CreateProfile_Handler(srv interface{}, ctx context.Context, de
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(BriaServiceServer).CreateProfile(ctx, req.(*CreateProfileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BriaService_UpdateProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateProfileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BriaServiceServer).UpdateProfile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BriaService_UpdateProfile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BriaServiceServer).UpdateProfile(ctx, req.(*UpdateProfileRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -986,6 +1019,10 @@ var BriaService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateProfile",
 			Handler:    _BriaService_CreateProfile_Handler,
+		},
+		{
+			MethodName: "UpdateProfile",
+			Handler:    _BriaService_UpdateProfile_Handler,
 		},
 		{
 			MethodName: "ListProfiles",
